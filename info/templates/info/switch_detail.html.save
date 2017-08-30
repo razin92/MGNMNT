@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+{% block body %}
+<div class="panel panel-default" style="width: 90%; margin-left: 5%;">
+<div class="panel-body">
+    <h3>{{ switch.ip_add }} | {{ switch.address.description }} | {{ switch.description }}</h3><br/>
+<hr>
+<div class="panel panel-default" style="width: 98%; margin-left: 1%;">
+<table class="table table-bordered" style="margin-top: 10px; background-color: transparent;">
+<tr class="active">
+{% for port in ports %}
+    {% if forloop.counter == 13 %}
+        </tr><tr class="active">
+    {% endif %}
+    {% if forloop.counter == 25 %}
+        <td>|</td>
+    {% endif %}
+    {% if port.select %}
+        {% if port.is_up %}
+            <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-switch btn-success">{{ port.number }}</a></td>
+        {% else %}
+            <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-switch btn-danger">{{ port.number }}</a> </td>
+        {% endif %}
+     {% else %}
+	{% if user.is_superuser %}
+        <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-default btn-switch">{{ port.number }}</a></td>
+	{% else %}
+	<td><a href="#" class="btn btn-default btn-switch">{{ port.number }}</a></td>
+	{% endif %}
+    {% endif %}
+{% endfor %}
+    </tr>
+</table>
+</div>
+<hr>
+<h4>Информация об активных портах:</h4>
+<table class="table table-hover table-striped">
+    <thead>
+    <tr>
+        <th>Порт</th>
+        <th>Абонент</th>
+	<th>Адрес</th>
+	<th>Провайдер</th>
+        <th>Описание</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for port in ports %}
+            {% if port.select %}
+            <tr>
+            <td width="50px" align="left">{{ port.number }}</td>
+                {% if port.subscriber %}
+                    <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-default btn-switch">{{ port.subscriber }}</a></td>
+                {% else %}
+                    <td class="danger"><h6 class="text-da>Никого тут нет!</h6></td>
+                {% endif %}
+	    <td>{{ port.subscriber.address }}</td>
+	    <td>{{ port.subscriber.provider }}</td>	
+            <td width="300px" align="left">{{ port.description}}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'index.html' %}
+{% block search %}
+    <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
+    <div align="center">
+    <form action="{% url 'info:search_subscribers' %}" method="get">
+    <input title="Ф.И.О" type="text" name="subscriber" placeholder="Ф.И.О" list="subscriber">
+    <input title="квартал" type="text" name="quarter" placeholder="квартал" list="quarter">
+    <input title="дом" type="text" name="home" placeholder="дом" list="home">
+    <input title="квартира" type="text" name="apartment" placeholder="квартира" list="apartment">
+    <input title="Дата" type="date" name="date" placeholder="Дата"><br>
+    <input type="submit" value="фильтр" class="btn btn-primary" style="margin: 5px;">
+    <a href="{% url 'info:subscribers_list' %}" class="btn btn-default" style="margin: 5px;">сброс</a>
+    </form>
+    </div>
+    </div>
+{% endblock %}
+{% block body %}
+<div class="panel panel-default" style="width: 90%; margin-left: 5%">
+<div class="panel-body">
+    <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th style="width: 2%;">ID</th>
+        <th>Имя</th>
+        <th style="width: 100px;">Адрес</th>
+        <th>Свич:порт</th>
+        <th>Провайдер</th>
+        <th>Телефон</th>
+        <th>Логин</th>
+        <th>Подключен</th>
+        <th style="width: 20%;">Заметки</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for each in subscriber %}
+    <tr>
+        <td>{{ each.id }}</td>
+        <td>{{ each.name }}</td>
+        <td style="width: 100px;">{{ each.address.quarter }}-{{ each.address.home }}-{{ each.address.apartment }}</td>
+	{% if each.port.id is not None %}
+	<td><a href="{% url 'info:ports_detail' each.port.id %}" title="Посмотреть порт" target="_blank">{{ each.port }}</a></td>
+        {% else %}
+	<td>Нет порта</td>
+	{% endif %}
+	<td><a href="{{ each.bill_url }}" title="Открыть в биллинге" target="_blank">{{ each.provider }}</a></td>
+        <td>{{ each.telephone }}</td>
+        <td>{{ each.login }}</td>
+        <td>{{ each.date|date:"d-m-Y" }}</td>
+        <td>{{ each.comment }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div align="center" >
+<ul class="pagination">
+{% if paginator.num_pages > 1 %}
+        {% if page_obj.has_previous %}
+            <li><a href="{% url 'info:subscribers_page' page_obj.previous_page_number %}">&laquo;</a></li>
+            <li><a href="{% url 'info:subscribers_page' 1 %}">1</a></li>
+            <li><a href="#">...</a></li>
+            <li><a href="{% url 'info:subscribers_page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+        {% endif %}
+            <li class="disabled"><a href="">{{ page_obj.number }}</a></li>
+        {% if page_obj.has_next %}
+            <li><a href="{% url 'info:subscribers_page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+            <li><a href="#">...</a></li>
+            <li><a href="{% url 'info:subscribers_page' paginator.num_pages %}">{{ paginator.num_pages }}</a></li>
+            <li><a href="{% url 'info:subscribers_page' page_obj.next_page_number %}">&raquo;</a></li>
+        {% endif %}
+    {% endif %}
+</ul>
+    </div>
+</div>
+</div>
+{% endblock %}
+

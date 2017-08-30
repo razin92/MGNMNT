@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+{% block search %}
+    <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
+    <div align="center">
+    <form action="{% url 'info:search_ports' %}" method="get">
+    <input type="text" name="switch" title="Свич" placeholder="ip адрес свича">
+    <input type="text" name="port" title="Порт" placeholder="номер порта">
+    <input type="submit" value="Поиск" class="btn btn-primary" style="margin: 5px;">
+    <a href="{% url 'info:ports_list' %}" class="btn btn-default" style="margin: 5px;">сброс</a>
+</form>
+    </div>
+    </div>
+{% endblock %}
+{% block body %}
+    <div class="panel panel-default" style="width: 90%; margin-left: 5%">
+    <div class="panel-body">
+<table class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th width="150px">Адрес свича</th>
+        <th width="50px">№</th>
+        <th>Абонент</th>
+        <th>Комментарий</th>
+        <th width="75px"></th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for element in ports %}
+            <tr>
+            <td><a href="{% url 'info:switch_detail' element.switch.id %}">{{ element.switch }}</a></td>
+            <td>{{ element.number }}</td>
+                {% if element.subscriber != None %}
+                    <td>{{ element.subscriber }}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            <td>{{ element.description }}</td>
+            <td><a href="{% url 'info:ports_edit' element.id %}" class="btn btn-success btn-xs">Редактировать</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+ <div align="center" >
+<ul class="pagination">
+{% if paginator.num_pages > 1 %}
+        {% if page_obj.has_previous %}
+            <li><a href="{% url 'info:ports_page' page_obj.previous_page_number %}">&laquo;</a></li>
+            <li><a href="{% url 'info:ports_page' 1 %}">1</a></li>
+            <li><a href="#">...</a></li>
+            <li><a href="{% url 'info:ports_page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+        {% endif %}
+            <li class="disabled"><a href="">{{ page_obj.number }}</a></li>
+        {% if page_obj.has_next %}
+            <li><a href="{% url 'info:ports_page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+            <li><a href="#">...</a></li>
+            <li><a href="{% url 'info:ports_page' paginator.num_pages %}">{{ paginator.num_pages }}</a></li>
+            <li><a href="{% url 'info:ports_page' page_obj.next_page_number %}">&raquo;</a></li>
+        {% endif %}
+    {% endif %}
+</ul>
+    </div>
+    </div>
+{% endblock %}

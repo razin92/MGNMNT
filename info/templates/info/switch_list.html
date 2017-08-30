@@ -1,0 +1,56 @@
+{% extends 'index.html' %}
+{% block search %}
+    <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
+    <div align="center">
+    <form action="{% url 'info:search_switch' %}" method="get">
+    <input type="text" name="switch" list="sw" title="Свич" placeholder="ip адрес свича">
+    <input type="submit" value="фильтр" class="btn btn-primary" style="margin: 5px;">
+    <a href="{% url 'info:switch_list' %}" class="btn btn-default" style="margin: 5px;">сброс</a>
+    <datalist id="sw">
+        {% for n in switch %}
+            <option>{{ n.ip_add }}</option>
+        {% endfor %}
+    </datalist>
+</form>
+    </div>
+    </div>
+{% endblock %}
+{% block body %}
+{% if switch %}
+    <div class="panel panel-default" style="width: 90%; margin-left: 5%">
+    <div class="panel-body">
+    <table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+        <th>№</th>
+        <th>IP адрес</th>
+        <th>Модель</th>
+        <th>Физический адрес</th>
+        <th>Описание</th>
+        <th></th>
+        </tr>
+    </thead>
+{% for element in switch %}
+    <tbody>
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ element.ip_add }}</td>
+        <td>{{ element.model }}</td>
+        <td>{{ element.address.district }}-{{ element.address.quarter }},{{ element.address.home }}
+            {% if element.address.apartment %}
+                кв{{ element.address.apartment }}
+            {% endif %}
+        </td>
+        <td>{{ element.description }}</td>
+        <th><a href="{% url 'info:switch_detail' element.id %}" class="btn btn-success btn-xs">подробно</a></th>
+    </tr>
+    </tbody>
+{% endfor %}
+    </table>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+{% block paginator %}
+{% endblock %}
+

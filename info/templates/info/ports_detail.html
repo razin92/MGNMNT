@@ -1,0 +1,62 @@
+{% extends 'index.html' %}
+{% block message %}
+    {% if status %}
+	{% if user.is_superuser %}
+         {{ status }}
+	{% endif %}
+    {% endif %}
+{% endblock %}
+{% block body %}
+<div class="panel panel-default" style="width: 90%; margin-left: 5%;">
+<div class="panel-body">
+    <h4>Порт номер: <strong>{{ portsinfo.number }}</strong> на свиче
+        <a href="{% url 'info:switch_detail' portsinfo.switch.id %}"><strong>{{ portsinfo.switch }}</strong></a>
+    </h4>
+<table class="table table-hover table-striped">
+<thead>
+    <tr>
+        <th>Узел</th>
+        <th>Абонент</th>
+	<th>Адрес</th>
+        <th>Логин</th>
+        <th>Телефон</th>
+        <th>Провайдер</th>
+        <th>Комментарий</th>
+	<th>Подключен</th>
+        <th>Статус</th>
+    </tr>
+</thead>
+    <tbody>
+    <tr>
+    <td>{{ portsinfo.switch.address.quarter }}-{{ portsinfo.switch.address.home }}</td>
+    <td>{{ portsinfo.subscriber }}</td>
+    <td>{{ portsinfo.subscriber.address.quarter }}-{{ portsinfo.subscriber.address.home }}-{{ portsinfo.subscriber.address.apartment }}</td>
+    <td>{{ portsinfo.subscriber.login }}</td>
+    <td>{{ portsinfo.subscriber.telephone }}</td>
+    <td><a href="{{ portsinfo.subscriber.bill_url }}" title="Открыть в биллинге" target="_blank">{{ portsinfo.subscriber.provider }}</a></td>
+    <td>{{ portsinfo.description }}</td>
+    <td>{{ portsinfo.subscriber.date|date:"d-m-Y" }}</td>    
+	{% if portsinfo.is_up == 1 %}
+            <td class="text-success">UP</td>
+        {% else %}
+            <td class="text-danger">DOWN</td>
+        {% endif %}
+    </tr>
+    </tbody>
+</table>
+<br/>
+<hr>
+<div align="right">
+    <a href="{% url 'info:ports_edit' portsinfo.id %}" class="btn btn-success btn-sm">Редактировать</a>
+    {% if portsinfo.select %}	
+    <a href="{% url 'info:port_reboot' portsinfo.switch.id portsinfo.id %}" type="button" class="btn btn-default btn-sm" data-loading-text="перезагружаю...">Перезагрузить порт</a>
+    {% endif %}
+    {% if user.is_superuser %}
+    <a href="{% url 'info:port_up' portsinfo.switch.id portsinfo.id %}" class="btn btn-success btn-sm">Включить порт</a>
+    <a href="{% url 'info:port_shutdown' portsinfo.switch.id portsinfo.id %}" class="btn btn-danger btn-sm">Выключить порт</a>
+    {% endif %}
+</div>
+</div>
+</div>
+{% endblock %}
+

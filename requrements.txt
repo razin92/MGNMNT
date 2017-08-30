@@ -1,0 +1,15 @@
+appdirs==1.4.3
+Django==1.10.6
+django-jquery==3.1.0
+django-npm==1.0.0
+django-registration==2.2
+mysqlclient==1.3.10
+optional-django==0.1.0
+packaging==16.8
+ply==3.10
+pyasn1==0.2.3
+pycryptodome==3.4.5
+pyparsing==2.2.0
+pysmi==0.1.2
+pysnmp==4.3.5
+six==1.10.0

@@ -1,0 +1,22 @@
+from django.shortcuts import render, HttpResponseRedirect,reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+
+def my_login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+    else:
+        return render(request, 'index.html', {
+            'error_message': "Неправильный логин или пароль"
+        })
+
+@login_required
+def index(request):
+    return render(request
+
+def logout_view(request):
+    logout_view(request)

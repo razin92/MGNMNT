@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% block body %}
+<div class="panel panel-default" style="width: 40%; margin-left: 30%;">
+<div class="panel-body">
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Комментарий_ {{ form.description }}</p>
+    {% if user.is_superuser %}
+        <p>Активен: {{ form.select }}</p>
+    {% endif %}
+    <div align="right">
+    <input type="submit" value="Сохранить" class="btn btn-success btn-sm"/>
+    </div>
+</form>
+</div>
+</div>
+{% endblock %}

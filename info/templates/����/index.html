@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<script src="/media/static/static_jquery/js/jquery.js"></script>
+<script src="/media/static/bootstrap/js/bootstrap.js"></script>
+{% load bootstrap_themes %}
+{% bootstrap_styles theme='paper' type='css' %}
+{% block head %}
+    <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{% url 'index' %}">MNGMT</a>
+    </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'info:switch_list' %}">Свичи</a></li>
+                <li><a href="{% url 'info:ports_list' %}">Порты</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    </nav>
+{% endblock %}
+{% block search %}
+{% endblock %}
+{% block body %}
+    <div class="panel-body">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
+    <script>
+        function MyCustomFunction(){
+            $("#submit").text("Loading...");
+            $(this).submit('loading').delay(1000).queue(function () {
+                // $(this).button('reset');
+            });
+        }
+    </script>
+    <button type="submit" onclick="MyCustomFunction()" id="submit" class="btn btn-primary btn-lg mt-2" data-loading-text="Sending...">Submit message!</button>
+    </div>
+{% endblock %}
+{% block auth %}
+    <div class="text-center panel-body">Для доступа к сайту необходимо авторизоваться<br/>
+    <a href="{% url 'login' %}" class="btn btn-success">ТУТ</a>
+    </div>
+{% endblock %}
+{% block footer %}
+{% endblock %}

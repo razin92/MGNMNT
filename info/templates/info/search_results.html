@@ -1,0 +1,12 @@
+<p>Ты ищешь: {{ port }} порт на {{ switch }} свиче</p>
+
+{% if numbers %}
+    <p>Найдено {{ numbers|length }}</p>
+    <ul>
+        {% for x in numbers %}
+        <li>{{ x.switch }}:{{ x.number }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Ни фига не найдено!</p>
+{% endif %}

@@ -1,0 +1,17 @@
+{% block body %}
+<form action="{% url 'info:search_result' %}" method="get">
+    <input type="text" name="q" list="sw">
+    <input type="text" name="x" list="port">
+    <input type="submit" value="Поиск">
+    <datalist id="sw">
+        {% for n in switch %}
+            <option>{{ n.ip_add }}</option>
+        {% endfor %}
+    </datalist>
+    <datalist id="port">
+        {% for x in port %}
+            <option>{{ x }}</option>
+        {% endfor %}
+    </datalist>
+</form>
+{% endblock %}
