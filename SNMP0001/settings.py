@@ -27,11 +27,14 @@ SECRET_KEY = 'b+d=zeoid(7yx_wai*-88b_mk_if$tj7@@ot=v7ucy3gf8piyo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+<<<<<<< HEAD
 
 ALLOWED_HOSTS = ['192.168.1.254',
                  '192.168.1.23',
                  '127.0.0.1'
                  ]
+=======
+>>>>>>> 15ee96dbcf23fae9ff8225b84e5efd1bc1fe2c9e
 
 
 # Application definition
