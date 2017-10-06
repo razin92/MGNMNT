@@ -21,11 +21,17 @@ class SwitchModel(models.Model):
 class District(models.Model):
     name = models.CharField(max_length=15, unique=True)
 
+    class Meta():
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
 class Quarter(models.Model):
     number = models.PositiveIntegerField(unique=True)
+
+    class Meta():
+        ordering = ['number']
 
     def __str__(self):
         return str(self.number)
@@ -33,11 +39,17 @@ class Quarter(models.Model):
 class HomeNumber(models.Model):
     number = models.CharField(max_length=4, unique=True)
 
+    class Meta():
+        ordering = ['number']
+
     def __str__(self):
-        return self.number
+        return str(self.number)
 
 class ApartmentNumber(models.Model):
     number = models.PositiveIntegerField(unique=True)
+
+    class Meta():
+        ordering = ['number']
 
     def __str__(self):
        return str(self.number)
@@ -51,6 +63,14 @@ class Address(models.Model):
 
     class Meta:
         unique_together = ('district', 'quarter', 'home', 'apartment')
+        ordering = ['district', 'quarter', 'home', 'apartment']
+
+    def __str__(self):
+        if self.apartment == None:
+            result = "%s-%s дом:%s" % (self.district.name, self.quarter.number, self.home.number)
+        else:
+            result = "%s-%s дом:%s кв:%s" % (self.district.name, self.quarter.number, self.home.number, self.apartment.number)
+        return result
 
 class SnmpCommunity(models.Model):
     name = models.CharField(max_length=20, unique=True)
