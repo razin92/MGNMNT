@@ -36,7 +36,7 @@
     <tr>
         <td>{{ each.id }}</td>
         <td>{{ each.name }}</td>
-        <td style="width: 100px;">{{ each.address.quarter }}-{{ each.address.home }}{% if each.address.home.litera is not None %}{{ each.address.home.litera }}{% endif %}-{{ each.address.apartment }}</td>
+        <td style="width: 100px;">{{ each.address.quarter }}-{{ each.address.home }}-{{ each.address.apartment }}</td>
 	{% if each.port.id is not None %}
 	<td><a href="{% url 'info:ports_detail' each.port.id %}" title="Посмотреть порт" target="_blank">{{ each.port }}</a></td>
         {% else %}
