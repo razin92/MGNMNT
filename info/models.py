@@ -38,12 +38,16 @@ class Quarter(models.Model):
 
 class HomeNumber(models.Model):
     number = models.PositiveIntegerField(unique=True)
+    litera = models.CharField(max_length=4, null=True, default=None, blank=True)
 
     class Meta():
         ordering = ['number']
 
     def __str__(self):
-        return str(self.number)
+        if self.litera == None:
+            return str(self.number)
+        else:
+            return str(self.number)+self.litera
 
 class ApartmentNumber(models.Model):
     number = models.PositiveIntegerField(unique=True)
@@ -67,9 +71,9 @@ class Address(models.Model):
 
     def __str__(self):
         if self.apartment == None:
-            result = "%s-%s дом:%s" % (self.district.name, self.quarter.number, self.home.number)
+            result = "%s-%s дом:%s" % (self.district.name, self.quarter.number, self.home)
         else:
-            result = "%s-%s дом:%s кв:%s" % (self.district.name, self.quarter.number, self.home.number, self.apartment.number)
+            result = "%s-%s дом:%s кв:%s" % (self.district.name, self.quarter.number, self.home, self.apartment.number)
         return result
 
 class SnmpCommunity(models.Model):

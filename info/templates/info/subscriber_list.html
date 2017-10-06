@@ -14,7 +14,7 @@
     <tr>
         <td>{{ each.name }}</td>
         <td>{{ each.address.quarter }}</td>
-        <td>{{ each.address.home }}</td>
+        <td>{{ each.address.home }}{% if each.address.home.litera is not None %}{{ each.address.home.litera }}{% endif %}</td>
         <td>{{ each.address.apartment }}</td>
         <td>{{ each.port }}</td>
         <td>{{ each.provider }}</td>
