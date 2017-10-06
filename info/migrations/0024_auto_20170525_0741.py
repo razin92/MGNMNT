@@ -11,13 +11,8 @@ class Migration(migrations.Migration):
     dependencies = [
         ('info', '0023_auto_20170428_0732'),
     ]
-
+'''
     operations = [
-        migrations.AddField(
-            model_name='subscriber',
-            name='bill_url',
-            field=models.URLField(blank=True, default='#', null=True),
-        ),
         migrations.AddField(
             model_name='subscriber',
             name='date',
@@ -34,3 +29,4 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=13, null=True),
         ),
     ]
+'''
