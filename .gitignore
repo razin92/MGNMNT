@@ -195,3 +195,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/django,python,pycharm,windows
+SNMP0001/settings.py

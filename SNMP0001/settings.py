@@ -26,11 +26,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'b+d=zeoid(7yx_wai*-88b_mk_if$tj7@@ot=v7ucy3gf8piyo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.16',
-		'pst.uz'		
-]
+ALLOWED_HOSTS = ['192.168.1.254',
+                 '192.168.1.23',
+                 '127.0.0.1'
+                 ]
+
 
 # Application definition
 
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'jquery',
     'django_static_jquery',
+    'npm',
     'snmp',
     'info',
     'bootstrap_themes',
@@ -85,12 +88,12 @@ WSGI_APPLICATION = 'SNMP0001.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'snmp_01',
-        'USER': 'snmpuser',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'snmp2',
+        'USER': 'manager',
         'PASSWORD': 'P@ssword',
         'HOST': '127.0.0.1',
-        'PORT': '',
+        'PORT': '3306',
     }
 }
 
