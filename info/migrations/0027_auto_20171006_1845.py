@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name='homenumber',
+            name='number',
+            field=models.PositiveIntegerField(),
+        ),
         migrations.AlterUniqueTogether(
             name='homenumber',
             unique_together=set([('number', 'litera')]),
