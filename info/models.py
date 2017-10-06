@@ -52,13 +52,6 @@ class Address(models.Model):
     class Meta:
         unique_together = ('district', 'quarter', 'home', 'apartment')
 
-    def __str__(self):
-        if self.apartment != None:
-            result = str(self.district) + '-' + str(self.quarter) + ' дом ' + str(self.home) + ' кв. ' + str(self.apartment)
-        else:
-            result = str(self.district) + '-' + str(self.quarter) + ' дом ' + str(self.home)
-        return result
-
 class SnmpCommunity(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
@@ -114,6 +107,7 @@ class PortsInfo(models.Model):
 
     class Meta:
         unique_together = ('switch', 'number')
+        ordering = ['switch', 'number']
 
     def __str__(self):
         sw = str(self.switch)
