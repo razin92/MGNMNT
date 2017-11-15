@@ -8,7 +8,7 @@ from django.utils import timezone
 def my_login(request):
     username = request.POST['username']
     password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
+    user = authenticate(username=username, password=password)
     if user is not None:
         login(request, user)
     else:
@@ -18,24 +18,19 @@ def my_login(request):
 
 @login_required
 def index(request):
-    #return render(request, "index.html")
-    subscriber = Subscriber.objects.all()
     switch = Switch.objects.all()
-    comnet = subscriber.filter(provider=Providerinfo.objects.get(name="Comnet"))
-    istv = subscriber.filter(provider=Providerinfo.objects.get(name="ISTV"))
-    time_now = subscriber.filter(date__month=timezone.now().month)
-    istv_now = subscriber.filter(provider=Providerinfo.objects.get(name="ISTV"), date__month=timezone.now().month)
-    comnet_now = subscriber.filter(provider=Providerinfo.objects.get(name="Comnet"), date__month=timezone.now().month)
-    #comnet_now = subscriber.filter(provider=Providerinfo.objects.get(name="Comnet"), date__month=5)
+    provider_set = Providerinfo.objects.all().order_by('name')
+    subscribers = Subscriber.objects.all()
+    subscribers_now = Subscriber.objects.filter(date__month=timezone.now().month)
+    result = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider).count()) for provider in provider_set]
+    result_now = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider, date__month=timezone.now().month).count()) for provider in provider_set]
     return render_to_response("index.html", {
-        'subscriber': subscriber,
         'switch': switch,
-        'comnet': comnet,
-        'istv': istv,
-        'time': time_now,
-        'istvnow': istv_now,
-        'comnetnow': comnet_now,
-	'user': User
+        'subscribers': subscribers,
+        'result': result,
+        'subscribers_now': subscribers_now,
+        'result_now': result_now,
+	    'user': User
     })
 
 def logout_view(request):
