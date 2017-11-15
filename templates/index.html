@@ -4,6 +4,20 @@
 {% load bootstrap_themes %}
 {% bootstrap_styles theme='paper' type='css' %}
 {% block head %}
+<script type="text/javascript">
+  function digitalWatch() {
+    var date = new Date();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+    if (hours < 10) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+    if (seconds < 10) seconds = "0" + seconds;
+    document.getElementById("digital_watch").innerHTML = hours + ":" + minutes + ":" + seconds;
+    setTimeout("digitalWatch()", 1000);
+  }
+</script>
+
     <nav class="navbar navbar-inverse">
     <div class="container-fluid">
     <div class="navbar-header">
@@ -47,7 +61,11 @@
         <p>{{ element }}</p>
     {% endfor %}
     </div>
-    </div>	
+    </div>
+    <div>
+    <p id="digital_watch" style="color: #f00; font-size: 120%; font-weight: bold;"></p>
+    </div>
+
 {% endblock %}
 {% else %}
 {% block auth %}
