@@ -34,16 +34,18 @@
 {% block body %}
     <div class="panel panel-default" style="width: 20%; height: 20%; margin-left: 5%; float: left">
     <div class="panel-body">
-    <p>Всего абонентов: <strong>{{ subscriber|length }}</strong></p>
-    <p>Comnet: {{ comnet|length }}</p>
-    <p>ISTV: {{ istv|length }}</p>
+    <p>Всего абонентов: <strong>{{ subscribers|length }}</strong></p>
+    {% for element in result %}
+        <p>{{ element }}</p>
+    {% endfor %}
     </div>
     </div>
     <div class="panel panel-default" style="width: 20%; height: 20%; margin-left: 5%; float: left">
     <div class="panel-body">	
-    <p>Подключено в этом месяце: <strong>{{ time|length }}</strong></p>
-        <p>На Comnet: {{ comnetnow|length }}</p>
-        <p>На ISTV: {{ istvnow|length }}</p>
+    <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }}</strong></p>
+    {% for element in result_now %}
+        <p>{{ element }}</p>
+    {% endfor %}
     </div>
     </div>	
 {% endblock %}
