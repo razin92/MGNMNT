@@ -37,7 +37,7 @@ class Quarter(models.Model):
         return str(self.number)
 
 class HomeNumber(models.Model):
-    number = models.PositiveIntegerField()
+    number = models.PositiveIntegerField(unique=False)
     litera = models.CharField(max_length=4, null=True, default=None, blank=True)
 
     class Meta():
