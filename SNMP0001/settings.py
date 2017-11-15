@@ -23,15 +23,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = 'b+d=zeoid(7yx_wai*-88b_mk_if$tj7@@ot=v7ucy3gf8piyo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+<<<<<<< HEAD
 
-
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = ['192.168.1.254',
+                 '192.168.1.23',
+                 '127.0.0.1'
                  ]
-
+=======
+>>>>>>> 15ee96dbcf23fae9ff8225b84e5efd1bc1fe2c9e
 
 
 # Application definition
@@ -88,7 +91,12 @@ WSGI_APPLICATION = 'SNMP0001.wsgi.application'
 
 DATABASES = {
     'default': {
-
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'snmp2',
+        'USER': 'manager',
+        'PASSWORD': 'P@ssword',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
