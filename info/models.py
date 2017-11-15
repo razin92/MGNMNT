@@ -37,18 +37,19 @@ class Quarter(models.Model):
         return str(self.number)
 
 class HomeNumber(models.Model):
-    number = models.PositiveIntegerField()
-    litera = models.CharField(max_length=4, null=True, default=None, blank=True)
+    number = models.CharField(max_length=4, unique=True)
+    #litera = models.CharField(max_length=4, null=True, default=None, blank=True)
 
     class Meta():
         ordering = ['number']
-        unique_together = ['number', 'litera']
+       # unique_together = ['number', 'litera']
 
     def __str__(self):
-        if self.litera == None:
-            return str(self.number)
-        else:
-            return str(self.number)+self.litera
+#if self.litera == None:
+#   return str(self.number)
+# else:
+#     return str(self.number)+self.litera
+        return self.number
 
 class ApartmentNumber(models.Model):
     number = models.PositiveIntegerField(unique=True)
