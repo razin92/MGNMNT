@@ -5,6 +5,7 @@ from telepot.loop import MessageLoop
 from .decorator import check_msg
 from .emodji import converter
 from django.utils import timezone
+from .token import TOKEN
 import telepot
 import time
 
@@ -16,7 +17,6 @@ def deimojize(text):
         return 'UZB'
 
 #Глобальные переменные
-TOKEN = '474408326:AAGh3DyJNKSWkHQnSg4oUuf7fZJnoWxdWV8'
 bot = telepot.Bot(TOKEN)
 
 def global_strings(msg):
