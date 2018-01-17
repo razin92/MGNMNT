@@ -80,6 +80,7 @@ class FAQ(models.Model):
 
 class TvModel(models.Model):
     vendor = models.CharField(max_length=50)
+    position_number = models.PositiveSmallIntegerField(default=1)
     ico = models.CharField(max_length=100)
 
     def __str__(self):
@@ -87,7 +88,6 @@ class TvModel(models.Model):
 
 class TvSettings(models.Model):
     sequence_number = models.PositiveSmallIntegerField(default=1)
-    position_number = models.PositiveSmallIntegerField(default=1)
     model = models.ForeignKey(TvModel)
     language = models.ForeignKey(Language)
     text = models.CharField(max_length=100)
