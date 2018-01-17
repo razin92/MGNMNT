@@ -70,6 +70,7 @@ class New(models.Model):
 class FAQ(models.Model):
     question = models.CharField(max_length=50)
     answer = models.CharField(max_length=500)
+    position_number = models.PositiveSmallIntegerField(default=1)
     enabled = models.BooleanField(default=True)
     language = models.ForeignKey(Language)
     ico = models.CharField(max_length=100)
@@ -86,6 +87,7 @@ class TvModel(models.Model):
 
 class TvSettings(models.Model):
     sequence_number = models.PositiveSmallIntegerField(default=1)
+    position_number = models.PositiveSmallIntegerField(default=1)
     model = models.ForeignKey(TvModel)
     language = models.ForeignKey(Language)
     text = models.CharField(max_length=100)

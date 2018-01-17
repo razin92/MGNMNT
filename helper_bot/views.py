@@ -126,12 +126,12 @@ class Keyboard():
         main = [KeyboardButton(text='%s %s' % (converter(back_to_main.ico), back_to_main.name))]
         if base_object == FAQ:
             faq_menu = {element.question: [KeyboardButton(text='%s %s' % (converter(element.ico), element.question))]
-                        for element in base_object.objects.all()
+                        for element in base_object.objects.filter(language__code=lang).order_by('position_number')
                         }
             keys = [faq_menu[x.question] for x in base_object.objects.all()]
         else:
             tv_models = {model.vendor: [KeyboardButton(text='%s %s' % (converter(model.ico), model.vendor))]
-                         for model in base_object.objects.all()
+                         for model in base_object.objects.all(language__code=lang).order_by('position_number')
                          }
             keys = [tv_models[x.vendor] for x in base_object.objects.all()]
         keys.append(main)
