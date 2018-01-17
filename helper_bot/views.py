@@ -6,6 +6,7 @@ from .decorator import check_msg
 from .emodji import converter
 from django.utils import timezone
 from .token import TOKEN
+from django.contrib.auth.decorators import login_required
 import telepot
 import time
 
@@ -261,6 +262,7 @@ def personal_bot(msg):
         bot.sendMessage(chat_id, message)
 
 #Запуск бота
+@login_required()
 def run_bot(request):
     MessageLoop(bot, {'chat': personal_bot, } ).run_as_thread()
     print('Слушаю...')
@@ -270,6 +272,7 @@ def run_bot(request):
 
 
 #Быстрое создание базовых объектов для работы бота
+@login_required()
 def fast_start(request):
     lng = Language.objects.get_or_create(name='Русский', code='RUS', ico=':rus:')[0]
     for element in MenuGroup.menu_group:
