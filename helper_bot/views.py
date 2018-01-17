@@ -128,12 +128,12 @@ class Keyboard():
             faq_menu = {element.question: [KeyboardButton(text='%s %s' % (converter(element.ico), element.question))]
                         for element in base_object.objects.filter(language__code=lang).order_by('position_number')
                         }
-            keys = [faq_menu[x.question] for x in base_object.objects.all()]
+            keys = [faq_menu[x.question] for x in base_object.objects.filter(language__code=lang).order_by('position_number')]
         else:
             tv_models = {model.vendor: [KeyboardButton(text='%s %s' % (converter(model.ico), model.vendor))]
                          for model in base_object.objects.all(language__code=lang).order_by('position_number')
                          }
-            keys = [tv_models[x.vendor] for x in base_object.objects.all()]
+            keys = [tv_models[x.vendor] for x in base_object.objects.filter(language__code=lang).order_by('position_number')]
         keys.append(main)
         keyboard = ReplyKeyboardMarkup(
             keyboard=keys,
