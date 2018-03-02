@@ -1,11 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response
-from django.http import HttpResponse
+from connector.views import SSH_connection
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber
 from .  import scripts, decorators
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from .forms import FilterForm
 
 
 class SwitchView(generic.ListView):
@@ -38,9 +39,23 @@ class SwitchDetailView(generic.DetailView):
         context['ports'] = PortsInfo.objects.filter(switch=self.object).order_by('number')
         return context
 
-class PortsInfoDetail(generic.DetailView):
-    model = PortsInfo
-    template_name = 'info/ports_detail.html'
+def PortsInfoDetail(request, pk):
+    port = get_object_or_404(PortsInfo, pk=pk)
+    template = 'info/ports_detail.html'
+    detail = ''
+    error_message = ''
+    try:
+        detail = SSH_connection(port.switch.ip_add, port.number)
+    except:
+        error_message = 'Ошибка при подключении к коммутатору'
+
+    context = {
+        'portsinfo': port,
+        'error_message': error_message,
+    }
+    context.update(detail)
+
+    return render(request, template, context)
 
 class PortsInfoEdit(generic.UpdateView):
     model = PortsInfo
@@ -77,7 +92,7 @@ class SubscribersDetail(generic.DetailView):
     model = Subscriber
     template_name = 'info/subscribers_detail.html'
 
-@login_required
+@login_required()
 def PortReboot(request, switch_id, port_id):
     oid = str(OidBase.objects.get(pk=2))
     comm = str(SnmpCommunity.objects.get(pk=2))
@@ -93,7 +108,7 @@ def PortReboot(request, switch_id, port_id):
     return HttpResponseRedirect(reverse('info:ports_detail', args=(port_id,)))
     #return render_to_response('info/ports_detail.html', {'status': status, 'portsinfo': port, 'user': User})
 
-@login_required
+@login_required()
 def PortShutdown(request, switch_id, port_id):
     oid = str(OidBase.objects.get(pk=2))
     comm = str(SnmpCommunity.objects.get(pk=2))
@@ -109,7 +124,7 @@ def PortShutdown(request, switch_id, port_id):
     #return HttpResponseRedirect(reverse('info:ports_detail', args=(port_id,)))
     return render_to_response('info/ports_detail.html', {'status': status, 'portsinfo': port, 'user': User})
 
-@login_required
+@login_required()
 def PortUp(request, switch_id, port_id):
     oid = str(OidBase.objects.get(pk=2))
     comm = str(SnmpCommunity.objects.get(pk=2))
@@ -130,6 +145,7 @@ def search_switch_result(request):
 
     return render_to_response('info/search_switch_result.html', {'switch': switch, 'user': User, 'error': error})
 
+@login_required()
 def search_ports_result(request):
     error = 'Ничего не найдено, попробуйте указать другие данные'
     ports = 'port'
@@ -154,151 +170,45 @@ def search_ports_result(request):
     else:
         return render_to_response('info/search_ports_result.html', {'error': error, 'user': User})
 
+@login_required()
 def search_subscribers_result(request):
-    error = 'Ничего не найдено, попробуйте указать другие данные'
-    subscriber = request.GET['subscriber']
-    quarter = request.GET['quarter']
-    home = request.GET['home']
-    apartment = request.GET['apartment']
-    date = request.GET['date']
-    subscribers = 'subscriber'
-    quarters = 'quarter'
-    homes = 'home'
-    dates = 'date'	
-    apartments = 'apartment'
-    # ----------------- ВСЕ 4 совпадения
-    if (subscribers and quarters and homes and apartments in request.GET and
-        subscriber and quarter and home and apartment):
-        result = Subscriber.objects.filter(
+    template = 'info/search_subscribers_result.html'
+    error = ''
+    rqst = request.GET
+
+    #Данные из POST запроса
+    subscriber = rqst['subscriber'] or ''
+    login = rqst['login'] or ''
+    quarter = Quarter.objects.filter(number__icontains=rqst['quarter']).values_list('number')
+    home = HomeNumber.objects.filter(number__icontains=rqst['home']).values_list('number')
+
+    filter_result = Subscriber.objects.filter(
+        name__icontains=subscriber,
+        login__icontains=login,
+        address__quarter__number__in=quarter,
+        address__home__number__in=home,
+    )
+
+    if rqst['date'] and 'date' in rqst:
+        date = rqst['date']
+        filter_result = Subscriber.objects.filter(date=date)
+    elif rqst['apartment'] and 'apartment' in rqst:
+        apartment = rqst['apartment']
+        filter_result = Subscriber.objects.filter(
             name__icontains=subscriber,
-            address__quarter__number=quarter,
-            address__home__number=home,
-            address__apartment__number=apartment
+            login__icontains=login,
+            address__quarter__number__in=quarter,
+            address__home__number__in=home,
+            address__apartment__number__in=apartment,
         )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-    # ----------------- 3 совпадения
-    elif (subscribers and quarters and homes in request.GET and
-        subscriber and quarter and home):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__quarter__number=quarter,
-            address__home__number=home
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
 
-    elif (subscribers and quarters and apartments in request.GET and
-        subscriber and quarter and apartment):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__quarter__number=quarter,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif (subscribers and homes and apartments in request.GET and
-        subscriber and home and apartment):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__home__number=home,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif (quarters and homes and apartments in request.GET and
-        quarter and home and apartment):
-        result = Subscriber.objects.filter(
-            address__quarter__number=quarter,
-            address__home__number=home,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    # ---------------------- 2 совпадения
-    elif ('subscriber' and 'quarter' in request.GET and
-        request.GET['subscriber'] and request.GET['quarter']):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__quarter__number=quarter
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('subscriber' and 'home'in request.GET and
-        request.GET['subscriber'] and request.GET['home']):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__home__number=home
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('subscriber' and 'apartment' in request.GET and
-        request.GET['subscriber'] and request.GET['apartment']):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('quarter' and 'home' in request.GET and
-        request.GET['quarter'] and request.GET['home']):
-        result = Subscriber.objects.filter(
-            address__quarter__number=quarter,
-            address__home__number=home,
-          )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('quarter' and 'apartment' in request.GET and
-        request.GET['quarter'] and request.GET['apartment']):
-        result = Subscriber.objects.filter(
-            address__quarter__number=quarter,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('home' and 'apartment' in request.GET and
-        request.GET['home'] and request.GET['apartment']):
-        result = Subscriber.objects.filter(
-            address__home__number=home,
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    # ---------------------- одно совпадение
-    elif ('subscriber' in request.GET and
-        request.GET['subscriber']):
-        result = Subscriber.objects.filter(
-            name__icontains=subscriber
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('home' in request.GET and
-        request.GET['home']):
-        result = Subscriber.objects.filter(
-            address__home__number=home
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('quarter' in request.GET and
-        request.GET['quarter']):
-        result = Subscriber.objects.filter(
-            address__quarter__number=quarter,
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif ('apartment' in request.GET and
-        request.GET['apartment']):
-        result = Subscriber.objects.filter(
-            address__apartment__number=apartment
-        )
-        return render_to_response('info/search_subscribers_result.html', {'subscriber': result, 'error': error, 'user': User})
-
-    elif 'date' in request.GET:
-        result = Subscriber.objects.filter(date=date)
-        return render_to_response('info/search_subscribers_result.html',
-                                  {'subscriber': result, 'error': error, 'user': User})
-
-    # -------------- Сообщение об ошибке
-    else:
+    if len(filter_result) == 0:
         error = 'Ничего не найдено, попробуйте указать другие данные'
-        return render_to_response('info/search_subscribers_result.html', {'error': error, 'user': User})
 
+    context = {
+        'subscriber': filter_result,
+        'error': error,
+        'user': User,
+    }
 
+    return render(request, template, context)

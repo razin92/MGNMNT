@@ -58,5 +58,84 @@
 </div>
 </div>
 </div>
+<div class="panel panel-default" style="width: 90%; margin-left: 5%;">
+<div class="panel-body">
+    {% if error_message %}
+    <h5 align="center">{{ error_message }}</h5>
+    {% else %}
+    <h5 align="center">Данные по порту с коммутатора</h5>
+    {% endif %}
+    <style xmlns="http://www.w3.org/1999/html">
+    .table_width {
+        width: 50%;
+        margin: auto;
+    }
+    </style>
+
+    <!--VLAN-->
+    <table class="table table-hover table_width">
+        <thead>
+        <tr>
+            {% for each in vlan_header %}
+            <th>{{ each }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+    <tbody>
+        {% for each in vlan %}
+            <tr>
+            {% for element in each %}
+                <td>{{ element }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <!--end VLAN-->
+
+    <!--FDB-->
+    <table class="table table-hover table_width">
+        <thead>
+        <tr>
+            {% for each in fdb_header %}
+            <th>{{ each }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+    <tbody>
+        {% for each in fdb %}
+            <tr>
+            {% for element in each %}
+                <td>{{ element }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <!--end FDB-->
+    {% regroup error by type as type_list %}
+
+    <table class="table table-hover table_width">
+    {% for type in type_list %}
+        <thead>
+            <tr>
+            <th>{{ type.grouper }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+            {% for error in type.list %}
+                {% if error.counter != '0'%}
+                {{ error.name }}: <b>{{ error.counter }}</b>
+                {% endif %}
+            {% endfor %}
+            </td>
+        </tr>
+        </tbody>
+    {% endfor %}
+    </table>
+</div>
+</div>
 {% endblock %}
 

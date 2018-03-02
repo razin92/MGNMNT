@@ -3,16 +3,24 @@
     <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
     <div align="center">
     <form action="{% url 'info:search_subscribers' %}" method="get">
-    <input title="Ф.И.О" type="text" name="subscriber" placeholder="Ф.И.О" list="subscriber">
-    <input title="квартал" type="text" name="quarter" placeholder="квартал" list="quarter">
-    <input title="дом" type="text" name="home" placeholder="дом" list="home">
-    <input title="квартира" type="text" name="apartment" placeholder="квартира" list="apartment">
+    <input title="Ф.И.О" type="text" name="subscriber" placeholder="Ф.И.О">
+    <input title="Логин" type="text" name="login" placeholder="login">
+    <input title="квартал" type="text" name="quarter" placeholder="квартал">
+    <input title="дом" type="text" name="home" placeholder="дом">
+    <input title="квартира" type="text" name="apartment" placeholder="квартира">
     <input title="Дата" type="date" name="date" placeholder="Дата"><br>
     <input type="submit" value="фильтр" class="btn btn-primary" style="margin: 5px;">
     <a href="{% url 'info:subscribers_list' %}" class="btn btn-default" style="margin: 5px;">сброс</a>
     </form>
     </div>
     </div>
+    <form action="{% url 'info:search_subscribers' %}" method="get">
+    {% for each in form %}
+    {{ each }}
+    {% endfor %}
+    {{ form }}
+    </form>
+
 {% endblock %}
 {% block body %}
 <div class="panel panel-default" style="width: 90%; margin-left: 5%">
@@ -71,7 +79,6 @@
     {% endif %}
 </ul>
     </div>
-</div>
 </div>
 {% endblock %}
 

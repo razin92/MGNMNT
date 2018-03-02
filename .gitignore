@@ -198,3 +198,4 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/django,python,pycharm,windows
 SNMP0001/settings.py
 helper_bot/token.py
+connector/auth_data.py

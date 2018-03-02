@@ -23,7 +23,11 @@ def index(request):
     subscribers = Subscriber.objects.all()
     subscribers_now = Subscriber.objects.filter(date__month=timezone.now().month)
     result = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider).count()) for provider in provider_set]
-    result_now = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider, date__month=timezone.now().month).count()) for provider in provider_set]
+    result_now = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(
+        provider=provider,
+        date__month=timezone.now().month,
+        date__year=timezone.now().year).count())
+                  for provider in provider_set]
     return render_to_response("index.html", {
         'switch': switch,
         'subscribers': subscribers,
