@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^logout/$', views.logout_view, name='logout'),
     url(r'^admin/', admin.site.urls),
     url(r'^info/', include('info.urls')),
-    url(r'^optic-network/', include('optic_network.urls')),
+    #url(r'^optic-network/', include('optic_network.urls')),
     url(r'^telebot/', include('helper_bot.urls')),
 
     #url(r'^snmp/', include('snmp.urls')),
