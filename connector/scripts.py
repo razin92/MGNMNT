@@ -2,7 +2,7 @@ from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.proto import rfc1902
 
-
+#Статус порта
 def GetPortStatus(ip, comm, oid):
     rez = None
     try:
