@@ -17,7 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from . import views
 
-app = 'connector'
 urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
     url(r'^$', views.index, name='index'),
@@ -26,7 +25,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^info/', include('info.urls')),
     url(r'^connector/', include('connector.urls')),
-    url(r'^optic-network/', include('optic_network.urls')),
+    #url(r'^optic-network/', include('optic_network.urls')),
     url(r'^telebot/', include('helper_bot.urls')),
     #url(r'^sktv/', include('sktv.urls')),
 
