@@ -199,7 +199,7 @@ def search_subscribers_result(request):
             login__icontains=login,
             address__quarter__number__in=quarter,
             address__home__number__in=home,
-            address__apartment__number__in=apartment,
+            address__apartment__number__icontains=apartment,
         )
 
     if len(filter_result) == 0:
