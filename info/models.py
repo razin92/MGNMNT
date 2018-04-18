@@ -37,7 +37,7 @@ class Quarter(models.Model):
         return str(self.number)
 
 class HomeNumber(models.Model):
-    number = models.CharField(max_length=15, unique=True)
+    number = models.CharField(unique=True, max_length=5)
 
     class Meta():
         ordering = ['number']
@@ -151,6 +151,7 @@ class PortsInfo(models.Model):
 
 class Subscriber(models.Model):
     name = models.CharField(max_length=50)
+    document = models.CharField(max_length=20, unique=True, null=True)
     provider = models.ForeignKey(Providerinfo)
     address = models.ForeignKey(Address,on_delete=models.SET_NULL, null=True)
     port = models.OneToOneField(PortsInfo, null=True, on_delete=models.DO_NOTHING, related_name='subscriber', blank=True)
@@ -160,10 +161,106 @@ class Subscriber(models.Model):
     bill_url = models.URLField(null=True, blank=True, default="#")
     comment = models.CharField(max_length=50, blank=True)
 
-
     class Meta:
         unique_together = ('name', 'address')
 
     def __str__(self):
+        return '%s-%s-%s | %s | %s' % (
+            self.address.quarter,
+            self.address.home,
+            self.address.apartment,
+            self.port,
+            self.name
+        )
+
+class MediaconverterModel(models.Model):
+    model = models.CharField(max_length=20, unique=True, verbose_name="Модель")
+
+    def __str__(self):
+        return self.model
+
+class Action(models.Model):
+    name = models.CharField(max_length=20, verbose_name="Название Акции")
+    description = models.CharField(max_length=200, verbose_name="Описание")
+    date_start = models.DateField(auto_now=True, verbose_name="Дата начала")
+    date_end = models.DateField(auto_now=True, verbose_name="Дата окончания")
+
+    def __str__(self):
         return self.name
+
+class WiFiRouterModel(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, verbose_name="Производитель")
+    model = models.CharField(max_length=20, unique=True, verbose_name="Модель")
+
+    def __str__(self):
+        return "%s / %s" % (self.vendor, self.model)
+
+class Mediaconverter(models.Model):
+    model = models.ForeignKey(MediaconverterModel, on_delete=models.CASCADE, verbose_name="Модель")
+    serial_number = models.CharField(max_length=20, unique=True, verbose_name="серийный номер")
+
+    def __str__(self):
+        return "%s(%s)" % (self.model, self.serial_number)
+
+class ExpendableMaterial(models.Model):
+    subscriber = models.OneToOneField(Subscriber, on_delete=models.PROTECT, verbose_name="Абонент")
+    action = models.ForeignKey(Action, default=None, null=True, blank=True)
+
+    sleeve = models.PositiveSmallIntegerField(default=1, verbose_name="Гильза (шт.)")
+    sleeve_exp = models.BooleanField(default=False, verbose_name="Гильза расход")
+
+    fast_connector = models.PositiveSmallIntegerField(default=1, verbose_name="Фаст-коннектор (шт.)")
+    fc_exp = models.BooleanField(default=False, verbose_name="ФК расход")
+
+    optic_cable = models.DecimalField(max_digits=5, decimal_places=2, default=1.00, verbose_name="Оптический кабель (м.)")
+    optiс_exp = models.BooleanField(default=False, verbose_name="Оптика расход")
+
+    sfp_module = models.SmallIntegerField(default=1, verbose_name="SFP-модуль (шт.)")
+    sfp_exp = models.BooleanField(default=False, verbose_name="SFP расход")
+
+    plastic_box = models.DecimalField(max_digits=5, decimal_places=2, default=1.00, verbose_name="Короб ПВХ (м.)")
+    plastic_exp = models.BooleanField(default=False, verbose_name="Короб расход")
+
+    electric_cable = models.DecimalField(max_digits=5, decimal_places=2, default=1.00, verbose_name="Эл. кабель (м.)")
+    ec_exp = models.BooleanField(default=False, verbose_name="Эл.кабель расход")
+
+    rj45_connector = models.SmallIntegerField(default=1, verbose_name="RJ-45 коннектор (шт.)")
+    rj45_exp = models.BooleanField(default=False, verbose_name="RJ45 расход")
+
+    utp_cable = models.DecimalField(max_digits=5, decimal_places=2, default=1.00, verbose_name="UTP кабель (м.)")
+    utp_exp = models.BooleanField(default=False, verbose_name="UTP расход")
+
+    wifi_router = models.ForeignKey(WiFiRouterModel, verbose_name="Wi-Fi роутер", null=True, blank=True)
+    wifi_exp = models.BooleanField(default=True, verbose_name="Wi-Fi расход")
+
+    socket = models.PositiveSmallIntegerField(default=1, verbose_name="Розетка (шт.)")
+    socket_exp = models.BooleanField(default=False, verbose_name="Розетка расход")
+
+    socket_plug = models.PositiveSmallIntegerField(default=1, verbose_name="Вилка (шт.)")
+    plug_exp = models.BooleanField(default=False, verbose_name="Вилка расход")
+
+    mediaconverter = models.OneToOneField(Mediaconverter, on_delete=models.DO_NOTHING, verbose_name="Медиаконвертер", null=True, blank=True)
+    mediaconverter_exp = models.BooleanField(default=False, verbose_name="Медиаконвертер расход")
+
+    def __str__(self):
+        return "%s" % (self.subscriber)
+
+class Contract(models.Model):
+    subscriber = models.ForeignKey(Subscriber, on_delete=models.PROTECT, verbose_name="Абонент")
+    provider = models.ForeignKey(Providerinfo, verbose_name="Провайдер")
+    contract_person = models.CharField(max_length=50, verbose_name="Договор ФИО")
+    contract_number = models.CharField(max_length=20, verbose_name="Договор №")
+    contract_date = models.DateField(auto_now=True, verbose_name="Договор дата")
+    login = models.CharField(max_length=20, verbose_name="Логин")
+    bill_url = models.URLField(default=None, null=True, blank=True, verbose_name="Адрес в биллинге")
+
+    class Meta:
+        unique_together = ['subscriber', 'provider']
+
+    def __str__(self):
+        return "%s [%s]" % (self.subscriber, self.provider)
+
+
+
+
 
