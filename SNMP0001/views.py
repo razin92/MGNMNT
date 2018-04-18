@@ -21,7 +21,7 @@ def index(request):
     switch = Switch.objects.all()
     provider_set = Providerinfo.objects.all().order_by('name')
     subscribers = Subscriber.objects.filter(port__isnull=False)
-    subscribers_now = Subscriber.objects.filter(date__month=timezone.now().month)
+    subscribers_now = Subscriber.objects.filter(date__month=timezone.now().month, date__year=timezone.now().year)
     result = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider, port__isnull=False).count()) for provider in provider_set]
     result_now = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(
         provider=provider,
