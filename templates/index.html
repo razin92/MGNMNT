@@ -17,6 +17,14 @@
                 <li><a href="{% url 'info:ports_list' %}">Порты</a></li>
 		{% endif %}
                 <li><a href="{% url 'info:subscribers_list' %}">Абоненты</a></li>
+            <!---
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Кабельное ТВ<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'sktv:device_type_list' 1 %}">Типы оборудования</a></li>
+                </ul>
+            </li>
+            -->
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'logout' %}">{{ user }}:Выйти</a></li>
@@ -36,7 +44,7 @@
     <div class="panel-body">
     <p>Всего абонентов: <strong>{{ subscribers|length }}</strong></p>
     {% for element in result %}
-        <p>{{ element }}</p>
+        <p>{{ element.name }}: <strong>{{ element.counter }}</strong></p>
     {% endfor %}
     </div>
     </div>
@@ -44,8 +52,17 @@
     <div class="panel-body">	
     <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }}</strong></p>
     {% for element in result_now %}
-        <p>{{ element }}</p>
+        <p>{{ element.name }}: <strong>{{ element.counter }}</strong></p>
     {% endfor %}
+    </div>
+    </div>
+    <div class="panel panel-default" style="width: 20%; margin-left: 5%; float: left">
+    <div class="panel-body">
+    <p>Крайний абонент:</p>
+        <p>Адрес: <strong>{{ last_subscriber.address }}</strong></p>
+        <p>Договор №: <strong>{{ last_subscriber.document }}</strong></p>
+        <p>Свич-порт: <strong>{{ last_subscriber.port }}</strong></p>
+        <p>Провайдер: <strong>{{ last_subscriber.provider }}</strong></p>
     </div>
     </div>
 {% endblock %}

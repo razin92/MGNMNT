@@ -21,20 +21,32 @@ def index(request):
     switch = Switch.objects.all()
     provider_set = Providerinfo.objects.all().order_by('name')
     subscribers = Subscriber.objects.filter(port__isnull=False)
-    subscribers_now = Subscriber.objects.filter(date__month=timezone.now().month, date__year=timezone.now().year)
-    result = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(provider=provider, port__isnull=False).count()) for provider in provider_set]
-    result_now = ["%s: { %s }" % (provider.name, Subscriber.objects.filter(
+    subscribers_now = Subscriber.objects.filter(
+        date__month=timezone.now().month, date__year=timezone.now().year)
+
+    class SubscribersCounter():
+        def __init__(self, name, counter):
+            self.name = name
+            self.counter = counter
+
+    result = [SubscribersCounter(
+        provider.name, Subscriber.objects.filter(
+            provider=provider, port__isnull=False).count()) for provider in provider_set]
+    result_now = [SubscribersCounter(provider.name, Subscriber.objects.filter(
         provider=provider,
         port__isnull=False,
         date__month=timezone.now().month,
         date__year=timezone.now().year).count())
                   for provider in provider_set]
+    last_subscriber = Subscriber.objects.filter(port__isnull=False).last()
+
     return render_to_response("index.html", {
         'switch': switch,
         'subscribers': subscribers,
         'result': result,
         'subscribers_now': subscribers_now,
         'result_now': result_now,
+        'last_subscriber': last_subscriber,
 	    'user': User
     })
 
