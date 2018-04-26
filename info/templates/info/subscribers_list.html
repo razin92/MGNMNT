@@ -52,7 +52,7 @@
 	<td>Нет порта</td>
 	{% endif %}
 	<td><a href="{{ each.bill_url }}" title="Открыть в биллинге" target="_blank">{{ each.provider }}</a></td>
-        <td>{% if subscriber.document %}{{ subscriber.document }}{% else %}-{% endif %}</td>
+        <td>{% if each.document %}№ - {{ each.document }}{% else %}-{% endif %}</td>
         <td>{{ each.telephone }}</td>
         <td>{{ each.login }}</td>
         <td>{{ each.date|date:"d-m-Y" }}</td>

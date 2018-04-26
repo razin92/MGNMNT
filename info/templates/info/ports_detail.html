@@ -32,7 +32,7 @@
     <tr>
     <td>{{ portsinfo.subscriber.name }}</td>
     <td>{{ portsinfo.subscriber.address.quarter }}-{{ portsinfo.subscriber.address.home }}-{{ portsinfo.subscriber.address.apartment }}</td>
-    <td>{% if subscriber.document %}{{ subscriber.document }}{% else %}-{% endif %}</td>
+    <td>{% if portsinfo.subscriber.document %}№ - {{ portsinfo.subscriber.document }}{% else %}-{% endif %}</td>
     <td>{{ portsinfo.subscriber.login }}</td>
     <td>{{ portsinfo.subscriber.telephone }}</td>
     <td><a href="{{ portsinfo.subscriber.bill_url }}" title="Открыть в биллинге" target="_blank">{{ portsinfo.subscriber.provider }}</a></td>

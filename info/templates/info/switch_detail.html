@@ -53,7 +53,7 @@
             <tr>
             <td width="50px" align="left">{{ port.number }}</td>
                 {% if port.subscriber.name %}
-                    <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-default btn-switch">{{ port.subscriber }}</a></td>
+                    <td><a href="{% url 'info:ports_detail' port.id %}" class="btn btn-default btn-switch">{{ port.subscriber.name }}</a></td>
                 {% else %}
                     <td><h6 class="text-danger">Никого тут нет!</h6></td>
                 {% endif %}
