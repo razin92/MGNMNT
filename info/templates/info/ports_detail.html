@@ -11,26 +11,28 @@
 <div class="panel-body">
     <h4>Порт номер: <strong>{{ portsinfo.number }}</strong> на свиче
         <a href="{% url 'info:switch_detail' portsinfo.switch.id %}"><strong>{{ portsinfo.switch }}</strong></a>
+        Узел: {{ portsinfo.switch.address.quarter }}-{{ portsinfo.switch.address.home }}
     </h4>
+<!--Subscriber's info-->
 <table class="table table-hover table-striped">
-<thead>
+    <thead>
     <tr>
-        <th>Узел</th>
         <th>Абонент</th>
-	<th>Адрес</th>
+	    <th>Адрес</th>
+        <th>Договор</th>
         <th>Логин</th>
         <th>Телефон</th>
         <th>Провайдер</th>
         <th>Комментарий</th>
-	<th>Подключен</th>
+	    <th>Подключен</th>
         <th>Статус</th>
     </tr>
-</thead>
+    </thead>
     <tbody>
     <tr>
-    <td>{{ portsinfo.switch.address.quarter }}-{{ portsinfo.switch.address.home }}</td>
-    <td>{{ portsinfo.subscriber }}</td>
+    <td>{{ portsinfo.subscriber.name }}</td>
     <td>{{ portsinfo.subscriber.address.quarter }}-{{ portsinfo.subscriber.address.home }}-{{ portsinfo.subscriber.address.apartment }}</td>
+    <td>{% if subscriber.document %}{{ subscriber.document }}{% else %}-{% endif %}</td>
     <td>{{ portsinfo.subscriber.login }}</td>
     <td>{{ portsinfo.subscriber.telephone }}</td>
     <td><a href="{{ portsinfo.subscriber.bill_url }}" title="Открыть в биллинге" target="_blank">{{ portsinfo.subscriber.provider }}</a></td>
@@ -44,8 +46,11 @@
     </tr>
     </tbody>
 </table>
+
 <br/>
+<!-- end Subscriber's info-->
 <hr>
+<!--Management-->
 <div align="right">
     <a href="{% url 'info:ports_edit' portsinfo.id %}" class="btn btn-success btn-sm">Редактировать</a>
     {% if portsinfo.select %}	
@@ -56,6 +61,7 @@
     <a href="{% url 'info:port_shutdown' portsinfo.switch.id portsinfo.id %}" class="btn btn-danger btn-sm">Выключить порт</a>
     {% endif %}
 </div>
+<!--end Management-->
 </div>
 </div>
 <div class="panel panel-default" style="width: 90%; margin-left: 5%;">

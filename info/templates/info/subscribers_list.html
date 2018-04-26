@@ -33,6 +33,7 @@
         <th style="width: 100px;">Адрес</th>
         <th>Свич:порт</th>
         <th>Провайдер</th>
+        <th>Договор</th>
         <th>Телефон</th>
         <th>Логин</th>
         <th>Подключен</th>
@@ -44,13 +45,14 @@
     <tr>
         <td>{{ each.id }}</td>
         <td>{{ each.name }}</td>
-        <td style="width: 100px;">{{ each.address.quarter }}-{{ each.address.home }}-{{ each.address.apartment }}</td>
+        <td style="width: 100px;">{{ each.address.quarter }}-{{ each.address.home }}{% if each.address.apartment %}-{{ each.address.apartment }}{% endif %}</td>
 	{% if each.port.id is not None %}
 	<td><a href="{% url 'info:ports_detail' each.port.id %}" title="Посмотреть порт" target="_blank">{{ each.port }}</a></td>
         {% else %}
 	<td>Нет порта</td>
 	{% endif %}
 	<td><a href="{{ each.bill_url }}" title="Открыть в биллинге" target="_blank">{{ each.provider }}</a></td>
+        <td>{% if subscriber.document %}{{ subscriber.document }}{% else %}-{% endif %}</td>
         <td>{{ each.telephone }}</td>
         <td>{{ each.login }}</td>
         <td>{{ each.date|date:"d-m-Y" }}</td>
