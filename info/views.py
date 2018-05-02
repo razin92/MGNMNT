@@ -6,7 +6,7 @@ from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quart
 from .  import scripts, decorators
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import FilterForm, ContractForm, AddressSearchForm
+'''from .forms import FilterForm, ContractForm, AddressSearchForm'''
 import json
 
 
@@ -225,7 +225,7 @@ def search_subscribers_result(request):
     }
 
     return render(request, template, context)
-
+'''
 class ContractView(View):
     template = 'info/contract_form.html'
 
@@ -279,5 +279,5 @@ class ContractViewJson(View):
 
         return HttpResponse(json.dumps(address_list, ensure_ascii=False), content_type='application/json')
 
-
+'''
 
