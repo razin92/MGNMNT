@@ -19,6 +19,9 @@
 {% if switch %}
     <div class="panel panel-default" style="width: 90%; margin-left: 5%">
     <div class="panel-body">
+    {% if user.is_superuser %}
+    <a href="{% url 'info:port_create' %}">Создать порты</a>
+    {% endif %}
     <table class="table table-bordered table-hover">
     <thead>
         <tr>

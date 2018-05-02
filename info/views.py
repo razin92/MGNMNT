@@ -1,12 +1,13 @@
-from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response, HttpResponse
 from connector.views import SSH_connection
 from django.urls import reverse_lazy, reverse
-from django.views import generic
+from django.views import generic, View
 from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber
 from .  import scripts, decorators
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import FilterForm
+from .forms import FilterForm, ContractForm, AddressSearchForm
+import json
 
 
 class SwitchView(generic.ListView):
@@ -91,6 +92,18 @@ class SubscribersView(generic.ListView):
 class SubscribersDetail(generic.DetailView):
     model = Subscriber
     template_name = 'info/subscribers_detail.html'
+
+class CreatePorts(View):
+
+    def get(self, request):
+        switch = Switch.objects.all()
+        for each in switch:
+            for x in range(1, each.model.ports+1):
+                PortsInfo.objects.get_or_create(
+                    switch=each,
+                    number=x
+                )
+        return HttpResponseRedirect(reverse('info:switch_list'))
 
 @login_required()
 def PortReboot(request, switch_id, port_id):
@@ -212,3 +225,59 @@ def search_subscribers_result(request):
     }
 
     return render(request, template, context)
+
+class ContractView(View):
+    template = 'info/contract_form.html'
+
+    def get(self, request):
+        form = AddressSearchForm(None)
+        context = {
+            'subscriber': ' ',
+            'form': form,
+        }
+
+        return render(request, self.template, context)
+
+    def post(self, request):
+        form = AddressSearchForm(request.POST or None)
+        subscriber = ''
+        if form.is_valid():
+            subscriber = Subscriber.objects.filter(
+                address__quarter__number=request.POST['quarter'],
+                address__home__number=request.POST['building'],
+                address__apartment__number=request.POST['apartment']
+            )
+
+        context = {
+            'form': form,
+            'subscriber': subscriber,
+        }
+
+        return render(request, self.template, context)
+
+class ContractViewJson(View):
+
+    def apartment(self, address):
+        if address.address.apartment == None:
+            return ''
+        return '-%s' % address.address.apartment.number
+
+    def get(self, request):
+        q = request.GET.get('q', '')
+        address_list = []
+        address = Subscriber.objects.filter(address__quarter__number__icontains=q)
+
+        for element in address:
+            new = {'q': '%s-%s-%s%s' % (
+                    element.address.district.name,
+                    element.address.quarter.number,
+                    element.address.home.number,
+                    self.apartment(address=element)
+            )
+                   }
+            address_list.append(new)
+
+        return HttpResponse(json.dumps(address_list, ensure_ascii=False), content_type='application/json')
+
+
+

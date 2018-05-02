@@ -20,9 +20,14 @@ urlpatterns = [
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/reboot/$', views.PortReboot, name='port_reboot'),
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/shutdown/$', views.PortShutdown, name='port_shutdown'),
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/up/$', views.PortUp, name='port_up'),
+    url(r'^ports/create/$', views.CreatePorts.as_view(), name='port_create'),
+
     #Пользователи
     url(r'^subscribers/$', views.SubscribersView.as_view(), name='subscribers_list'),
     url(r'^subscribers/(?P<pk>[0-9]+)/$', views.SubscribersDetail.as_view(), name='subscribers_detail'),
     url(r'^subscribers/page/(?P<page>\d+)', views.SubscribersView.as_view(), name='subscribers_page'),
+
+    url(r'^contract/$', views.ContractView.as_view(), name='contract_form'),
+    url(r'^contract/json$', views.ContractViewJson.as_view(), name='contract_json')
 
 ]
