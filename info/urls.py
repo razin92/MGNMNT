@@ -27,7 +27,5 @@ urlpatterns = [
     url(r'^subscribers/(?P<pk>[0-9]+)/$', views.SubscribersDetail.as_view(), name='subscribers_detail'),
     url(r'^subscribers/page/(?P<page>\d+)', views.SubscribersView.as_view(), name='subscribers_page'),
 
-    url(r'^contract/$', views.ContractView.as_view(), name='contract_form'),
-    url(r'^contract/json$', views.ContractViewJson.as_view(), name='contract_json')
 
 ]
