@@ -14,7 +14,6 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url 'info:switch_list' %}">Свичи</a></li>
 		{% if user.is_superuser %}
-                <li><a href="{% url 'info:ports_list' %}">Порты</a></li>
 		{% endif %}
                 <li><a href="{% url 'info:subscribers_list' %}">Абоненты</a></li>
             </ul>

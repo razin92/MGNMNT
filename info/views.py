@@ -1,34 +1,29 @@
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response, HttpResponse
 from connector.views import SSH_connection
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.views import generic, View
 from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber
 from .  import scripts, decorators
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-'''from .forms import FilterForm, ContractForm, AddressSearchForm'''
+from django.contrib.auth.decorators import login_required, permission_required
+from .forms import FilterForm, ContractForm, AddressSearchForm, SwitchForm
 import json
 
 
-class SwitchView(generic.ListView):
-    template_name = 'info/switch_list.html'
-    context_object_name = 'switch'
+class SwitchView(View):
 
-    def get_queryset(self):
-        return Switch.objects.order_by('ip_add')
-    # Поисковик
-    def search_switch(request):
-        switch = Switch.objects.all()
-        return render_to_response('info/search_sw_p.html', {'switch': switch, 'user': User})
+    def get(self, request):
+        template = 'info/switch_list.html'
+        switches = Switch.objects.all().order_by('ip_add')
+        if request.GET.get('switch', ''):
+            req = request.GET['switch']
+            switches = Switch.objects.filter(address__switch__ip_add=req)
 
+        context = {
+            'switch': switches
+        }
 
-class PortsInfoView(generic.ListView):
-    template_name = 'info/ports_list.html'
-    context_object_name = 'ports'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return PortsInfo.objects.order_by('switch','number')
+        return render(request, template, context)
 
 class SwitchDetailView(generic.DetailView):
     model = Switch
@@ -58,15 +53,6 @@ def PortsInfoDetail(request, pk):
 
     return render(request, template, context)
 
-class PortsInfoEdit(generic.UpdateView):
-    model = PortsInfo
-    success_url = reverse_lazy('info:ports_list')
-    template_name = 'info/ports_edit.html'
-    fields = ['description', 'select']
-
-    #def get_success_url(self):
-     #   return render_to_response('info/ports_detail.html', {'pk': self.model.id})
-
 class SubscribersView(generic.ListView):
     template_name = 'info/subscribers_list.html'
     context_object_name = 'subscriber'
@@ -93,33 +79,57 @@ class SubscribersDetail(generic.DetailView):
     model = Subscriber
     template_name = 'info/subscribers_detail.html'
 
-class CreatePorts(View):
+class CreateSwitch(View):
+    template = 'info/switch_create.html'
+
+    def switch_create(self, data):
+        switch = Switch.objects.get_or_create(
+            model=data.model,
+            ip_add=data.ip_add,
+            address=data.address,
+            description=data.description
+        )
+        switch.save()
+        return switch
+
+    def port_create(self, switch):
+        for each in range(1, switch.model.ports+1):
+            PortsInfo.objects.get_or_create(
+                switch=switch,
+                number=each,
+            )
 
     def get(self, request):
-        switch = Switch.objects.all()
-        for each in switch:
-            for x in range(1, each.model.ports+1):
-                PortsInfo.objects.get_or_create(
-                    switch=each,
-                    number=x
-                )
-        return HttpResponseRedirect(reverse('info:switch_list'))
+        form = SwitchForm(None)
+        context = {
+            'form': form
+        }
+        return render(request, self.template, context)
+
+    def post(self, request):
+        form = SwitchForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            self.port_create(form.instance)
+            return HttpResponseRedirect(reverse('info:switch_list'))
+        context = {
+            'form': form
+        }
+        return render(request, self.template, context)
 
 @login_required()
 def PortReboot(request, switch_id, port_id):
+    import time
     oid = str(OidBase.objects.get(pk=2))
     comm = str(SnmpCommunity.objects.get(pk=2))
     port = get_object_or_404(PortsInfo, pk=port_id)
     switch = str(get_object_or_404(Switch, pk=switch_id))
     result = oid + str(port.number)
-    def shutdown():
-        return scripts.SetPortStatus(switch, comm, result, 2)
-    @decorators.pause
-    def up():
-        return scripts.SetPortStatus(switch, comm, result, 1)
-    status = str(shutdown()) + '|' + str(up())
+    scripts.SetPortStatus(switch, comm, result, 2)
+    time.sleep(2)
+    scripts.SetPortStatus(switch, comm, result, 1)
+    time.sleep(1)
     return HttpResponseRedirect(reverse('info:ports_detail', args=(port_id,)))
-    #return render_to_response('info/ports_detail.html', {'status': status, 'portsinfo': port, 'user': User})
 
 @login_required()
 def PortShutdown(request, switch_id, port_id):
@@ -150,38 +160,6 @@ def PortUp(request, switch_id, port_id):
     status = str(up())
     #return HttpResponseRedirect(reverse('info:ports_detail', args=(port_id,)))
     return render_to_response('info/ports_detail.html', {'status': status, 'portsinfo': port, 'user': User})
-
-def search_switch_result(request):
-    error = 'Ничего не найдено, попробуйте указать другие данные'
-    req = request.GET['switch']
-    switch = Switch.objects.filter(address__switch__ip_add__icontains=req)
-
-    return render_to_response('info/search_switch_result.html', {'switch': switch, 'user': User, 'error': error})
-
-@login_required()
-def search_ports_result(request):
-    error = 'Ничего не найдено, попробуйте указать другие данные'
-    ports = 'port'
-    switches = 'switch'
-    switch = request.GET[switches]
-    port = request.GET[ports]
-    if ports and switches in request.GET and switch and port:
-        numbers = PortsInfo.objects.filter(switch__ip_add__icontains=switch, number=port)
-        return render_to_response(
-            'info/search_ports_result.html', {
-                'ports': numbers,
-                'error': error,
-                'user': User,
-            }
-        )
-    elif ports in request.GET and switch:
-        numbers = PortsInfo.objects.filter(switch__ip_add__icontains=switch)
-        return render_to_response('info/search_ports_result.html', {'ports': numbers, 'error': error, 'user': User})
-    elif ports in request.GET and port:
-        numbers = PortsInfo.objects.filter(number=port)
-        return render_to_response('info/search_ports_result.html', {'ports': numbers, 'error': error, 'user': User})
-    else:
-        return render_to_response('info/search_ports_result.html', {'error': error, 'user': User})
 
 @login_required()
 def search_subscribers_result(request):
@@ -225,7 +203,7 @@ def search_subscribers_result(request):
     }
 
     return render(request, template, context)
-'''
+
 class ContractView(View):
     template = 'info/contract_form.html'
 
@@ -279,5 +257,4 @@ class ContractViewJson(View):
 
         return HttpResponse(json.dumps(address_list, ensure_ascii=False), content_type='application/json')
 
-'''
 

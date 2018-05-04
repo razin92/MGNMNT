@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+{% load bootstrap %}
+{% block body %}
+    <div class="panel panel-default" style="width: 40%; margin-left: 30%;">
+    <div class="panel-body">
+        <h4>Укажите адрес абонента</h4>
+        {% if subscriber|length == 0 %}
+            Абонент не найден
+        {% else %}
+            {% for element in subscriber %}
+                {{ element.address }}
+            {% endfor %}
+        {% endif %}
+        <form action="{% url 'info:contract_form' %}" method="post">
+            {% csrf_token %}
+            {{ form|bootstrap }}
+            <input type="submit" value="Далее" class="btn btn-success btn-sm"/>
+        </form>
+    </div>
+    </div>
+{% endblock %}

@@ -87,10 +87,10 @@ class OidBase(models.Model):
         return self.value
 
 class Switch(models.Model):
-    ip_add = models.GenericIPAddressField(unique=True)
-    model = models.ForeignKey(SwitchModel, null=True, on_delete=models.SET_NULL)
-    address = models.ForeignKey(Address, null=True, on_delete=models.SET_NULL)
-    description = models.CharField(max_length=20, blank=True)
+    ip_add = models.GenericIPAddressField(unique=True, verbose_name='IP адрес')
+    model = models.ForeignKey(SwitchModel, null=True, on_delete=models.SET_NULL, verbose_name='Модель')
+    address = models.ForeignKey(Address, null=True, on_delete=models.SET_NULL, verbose_name='Адрес узла')
+    description = models.CharField(max_length=20, blank=True, verbose_name='Доп. информация')
 
     def __str__(self):
         return str(self.ip_add)
