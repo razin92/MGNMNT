@@ -13,21 +13,29 @@ class ContractForm(forms.ModelForm):
         model = Contract
         fields = ['contract_number', 'contract_person']
 
-class SwitchFilterForm(forms.Form):
-    address = forms.ChoiceField(
-        choices=((x.id, x) for x in Address.objects.all().exclude(apartment__isnull=False).order_by('quarter')),
-        label='Фильтр по узлу',
-    )
+class SwitchFilterForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SwitchFilterForm, self).__init__(*args, **kwargs)
+        self.fields['address'] = forms.ModelChoiceField(
+            queryset=Address.objects.all().exclude(apartment__isnull=False).order_by('quarter'),
+            label='Фильтр по узлу'
+        )
+
+    class Meta:
+        model = Switch
+        fields = ['address']
 
 class SwitchForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SwitchForm, self).__init__(*args, **kwargs)
+        self.fields['address'] = forms.ModelChoiceField(
+            queryset=Address.objects.all().exclude(apartment__isnull=False).order_by('quarter'),
+            label='Адрес узла'
+        )
+
     class Meta:
         model = Switch
         fields = ['model', 'ip_add', 'address', 'description']
-
-    def __init__(self, *args, **kwargs):
-        super(SwitchForm, self).__init__(*args, **kwargs)
-        self.fields['address'].widget.choices = ((x.pk, x) for x in Address.objects.all().exclude(apartment__isnull=False))
-        self.fields['address'].valid = True
 
 class AddressSearchForm(forms.Form):
     quarter = forms.ChoiceField(
