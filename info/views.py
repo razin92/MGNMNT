@@ -1,12 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response, HttpResponse
 from connector.views import SSH_connection
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic, View
-from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber
+from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber, Address
 from .  import scripts, decorators
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
-from .forms import FilterForm, ContractForm, AddressSearchForm, SwitchForm
+from .forms import FilterForm, ContractForm, AddressSearchForm, SwitchForm, SwitchFilterForm
 import json
 
 
@@ -14,13 +14,17 @@ class SwitchView(View):
 
     def get(self, request):
         template = 'info/switch_list.html'
-        switches = Switch.objects.all().order_by('ip_add')
-        if request.GET.get('switch', ''):
-            req = request.GET['switch']
-            switches = Switch.objects.filter(address__switch__ip_add=req)
+        form = SwitchFilterForm
+        switches = Switch.objects.all().order_by('address', 'ip_add')
+        address = Address.objects.all().exclude(apartment__isnull=False)
+        if request.GET.get('address', ''):
+            req = request.GET['address']
+            switches = Switch.objects.filter(address__id=req)
 
         context = {
-            'switch': switches
+            'switch': switches,
+            'address': address,
+            'form': form
         }
 
         return render(request, template, context)
@@ -53,6 +57,14 @@ def PortsInfoDetail(request, pk):
 
     return render(request, template, context)
 
+class PortsInfoEdit(generic.UpdateView):
+    template_name = 'info/ports_edit.html'
+    model = PortsInfo
+    fields = ['description', 'select']
+
+    def get_success_url(self):
+        return reverse('info:switch_detail', args=(self.object.switch.id,))
+
 class SubscribersView(generic.ListView):
     template_name = 'info/subscribers_list.html'
     context_object_name = 'subscriber'
@@ -82,6 +94,7 @@ class SubscribersDetail(generic.DetailView):
 class CreateSwitch(View):
     template = 'info/switch_create.html'
 
+    #Function create switch
     def switch_create(self, data):
         switch = Switch.objects.get_or_create(
             model=data.model,
@@ -92,6 +105,7 @@ class CreateSwitch(View):
         switch.save()
         return switch
 
+    #Function create ports according on the switch.model.ports q-tty
     def port_create(self, switch):
         for each in range(1, switch.model.ports+1):
             PortsInfo.objects.get_or_create(
@@ -120,13 +134,16 @@ class CreateSwitch(View):
 @login_required()
 def PortReboot(request, switch_id, port_id):
     import time
+    #Data for SNMP request
     oid = str(OidBase.objects.get(pk=2))
     comm = str(SnmpCommunity.objects.get(pk=2))
     port = get_object_or_404(PortsInfo, pk=port_id)
     switch = str(get_object_or_404(Switch, pk=switch_id))
     result = oid + str(port.number)
+    #Port shutdown
     scripts.SetPortStatus(switch, comm, result, 2)
     time.sleep(2)
+    #Port up
     scripts.SetPortStatus(switch, comm, result, 1)
     time.sleep(1)
     return HttpResponseRedirect(reverse('info:ports_detail', args=(port_id,)))

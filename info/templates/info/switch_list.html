@@ -1,16 +1,17 @@
 {% extends 'index.html' %}
+{% load bootstrap %}
 {% block search %}
+    <style>
+     .form-control {
+         width: auto;
+    }
+    </style>
     <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
     <div align="center">
     <form action="" method="get">
-    <input type="text" name="switch" list="sw" title="Свич" placeholder="ip адрес свича">
-    <input type="submit" value="фильтр" class="btn btn-primary" style="margin: 5px;">
-    <a href="{% url 'info:switch_list' %}" class="btn btn-default" style="margin: 5px;">сброс</a>
-    <datalist id="sw">
-        {% for n in switch %}
-            <option>{{ n.ip_add }}</option>
-        {% endfor %}
-    </datalist>
+    {{ form|bootstrap }}
+    <input type="submit" value="фильтр" class="btn btn-primary btn-sm">
+    <a href="{% url 'info:switch_list' %}" class="btn btn-default btn-sm">сброс</a>
 </form>
     </div>
     </div>
@@ -28,7 +29,7 @@
         <th>№</th>
         <th>IP адрес</th>
         <th>Модель</th>
-        <th>Физический адрес</th>
+        <th>Узел</th>
         <th>Описание</th>
         <th></th>
         </tr>

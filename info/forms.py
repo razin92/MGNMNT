@@ -13,6 +13,12 @@ class ContractForm(forms.ModelForm):
         model = Contract
         fields = ['contract_number', 'contract_person']
 
+class SwitchFilterForm(forms.Form):
+    address = forms.ChoiceField(
+        choices=((x.id, x) for x in Address.objects.all().exclude(apartment__isnull=False).order_by('quarter')),
+        label='Фильтр по узлу',
+    )
+
 class SwitchForm(forms.ModelForm):
     class Meta:
         model = Switch

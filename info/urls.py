@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^switch/(?P<pk>[0-9]+)/$', views.SwitchDetailView.as_view(), name='switch_detail'),
     #Порты
     url(r'^ports/(?P<pk>[0-9]+)/$', views.PortsInfoDetail, name='ports_detail'),
+    url(r'^ports/edit/(?P<pk>[0-9]+)/$', views.PortsInfoEdit.as_view(), name='ports_edit'),
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/reboot/$', views.PortReboot, name='port_reboot'),
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/shutdown/$', views.PortShutdown, name='port_shutdown'),
     url(r'^ports/(?P<switch_id>[0-9]+)/(?P<port_id>[0-9]+)/up/$', views.PortUp, name='port_up'),
