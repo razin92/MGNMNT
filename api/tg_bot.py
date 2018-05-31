@@ -6,7 +6,8 @@ from django.shortcuts import render
 from .models import AuthorizedUser
 from .token import pst_notifier_bot as TOKEN
 from django.contrib.auth.decorators import login_required
-import requests
+from django.utils.decorators import method_decorator
+from basicauth.decorators import basic_auth_required
 import telepot
 import time
 
@@ -146,6 +147,7 @@ def run_bot(request):
     while 1:
         time.sleep(10)
 
+@method_decorator(basic_auth_required, name='dispatch')
 class Message(View):
 
     def get(self, request):

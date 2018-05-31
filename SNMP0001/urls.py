@@ -19,9 +19,10 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url('^', include('django.contrib.auth.urls')),
+    #url('^', include('django.contrib.auth.urls')),
     url(r'^$', views.index, name='index'),
-    url(r'^login/$', views.my_login, name='login'),
+    url(r'^login/$', views.Login.as_view(), name='login'),
+    url(r'^login-redirect/$', views.Login.as_view(), name="login-redirect"),
     url(r'^logout/$', views.logout_view, name='logout'),
     url(r'^admin/', admin.site.urls),
     url(r'^info/', include('info.urls')),

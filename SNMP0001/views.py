@@ -1,24 +1,52 @@
 from django.shortcuts import render, HttpResponseRedirect,reverse, render_to_response
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.views import View
 from info.models import Subscriber, Switch, Providerinfo
 from django.utils import timezone
+from .forms import LoginForm
 
-def my_login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    if username == 'Android':
-        return render(request, 'registration/login.html', {
-            'error_message': "Доступ запрещен!"
-        })
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-    else:
-        return render(request, 'registration/login.html', {
-            'error_message': "Неправильный логин или пароль"
-        })
+
+class Login(View):
+
+    def get(self, request):
+        error = ''
+        form = LoginForm
+        return render(request, "login.html", {'error': error, 'form': form})
+
+
+    def post(self, request):
+        form = LoginForm(request.POST or None)
+        username = request.POST['username']
+        password = request.POST['password']
+        if username == 'Android':
+            error = 'Доступ запрещен!'
+            context = {
+                'error': error,
+                'form': form,
+            }
+            return render(request, "login.html", context)
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                error = 'Аккаунт не активирован!'
+                context = {
+                    'error': error,
+                    'form': form,
+                }
+                return render(request, "login.html", context)
+
+        else:
+            error = 'Неправильный логин или пароль'
+            context = {
+                'error': error,
+                'form': form,
+            }
+            return render(request, "login.html", context)
 
 @login_required
 def index(request):
@@ -55,4 +83,5 @@ def index(request):
     })
 
 def logout_view(request):
-    logout_view(request)
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))
