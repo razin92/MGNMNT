@@ -8,7 +8,10 @@ from .token import pst_notifier_bot as TOKEN
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from basicauth.decorators import basic_auth_required
+from django.views.decorators.csrf import csrf_exempt
+import codecs
 import telepot
+import json
 import time
 
 bot = telepot.Bot(TOKEN)
@@ -148,24 +151,25 @@ def run_bot(request):
         time.sleep(10)
 
 @method_decorator(basic_auth_required, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class Message(View):
 
     def get(self, request):
 
         response = {
-            'result': 'get_ok'
+            'result': 'get_ok',
+            'your_ip': '%s' % request.META['REMOTE_ADDR'],
         }
-
-        return render(request, template_name='api/test.html', context={'response': response})
+        #return render(request, template_name='api/test.html', context={'response': response})
+        return JsonResponse(response)
 
     def post(self, request):
         users = AuthorizedUser.objects.filter(authorized=True, user_id__isnull=False)
-        text = 'User: %s \n' \
-               'Ip_add: %s \n' \
+        body = request.body
+        text = 'Ip_add: %s \n' \
                'Post: %s \n' % \
-               (request.user.username,
-                request.META['REMOTE_ADDR'],
-                request.POST)
+               (request.META['REMOTE_ADDR'],
+                body)
 
         for each in users:
             bot.sendMessage(each.user_id, text)
