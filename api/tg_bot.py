@@ -2,6 +2,7 @@ from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 from telepot.loop import MessageLoop
 from django.views import View
 from django.http import JsonResponse
+from django.shortcuts import render
 from .models import AuthorizedUser
 from .token import pst_notifier_bot as TOKEN
 from django.contrib.auth.decorators import login_required
@@ -137,6 +138,7 @@ def personal_bot(msg):
         message = 'Я не буду с Вами разговаривать при всех, только с глазу на глаз.'
         bot.sendMessage(chat_id, message)
 
+@login_required()
 def run_bot(request):
     MessageLoop(bot, {'chat': personal_bot} ).run_as_thread()
     print('Слушаю...')
@@ -147,32 +149,27 @@ def run_bot(request):
 class Message(View):
 
     def get(self, request):
-        msg = 'test'
-        if 'msg' in request.GET:
-            msg = request.GET['msg']
+
         response = {
-            'result': 'get'
+            'result': 'get_ok'
         }
-        url = 'http://127.0.0.1/api/notifier/'
 
-        users = AuthorizedUser.objects.filter(authorized=True, user_id__isnull=False)
+        return render(request, template_name='api/test.html', context={'response': response})
 
-        for each in users:
-            bot.sendMessage(each.user_id, msg)
-
-        requests.post(url, msg)
-
-        return JsonResponse(response)
-
-    @login_required()
     def post(self, request):
         users = AuthorizedUser.objects.filter(authorized=True, user_id__isnull=False)
+        text = 'User: %s \n' \
+               'Ip_add: %s \n' \
+               'Post: %s \n' % \
+               (request.user.username,
+                request.META['REMOTE_ADDR'],
+                request.POST)
 
         for each in users:
-            bot.sendMessage(each.user_id, 'Сообщение!')
+            bot.sendMessage(each.user_id, text)
 
         response = {
-            'result': 'post'
+            'result': 'post_ok'
         }
 
         return JsonResponse(response)
