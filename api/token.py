@@ -1,1 +1,0 @@
-pst_notifier_bot = '584294148:AAFWslq1lhYf-GSm7BVXaGDUrERj1r-02ZE'
