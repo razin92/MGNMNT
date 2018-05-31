@@ -8,11 +8,15 @@ from django.utils import timezone
 def my_login(request):
     username = request.POST['username']
     password = request.POST['password']
+    if username == 'Android':
+        return render(request, 'registration/login.html', {
+            'error_message': "Доступ запрещен!"
+        })
     user = authenticate(username=username, password=password)
     if user is not None:
         login(request, user)
     else:
-        return render(request, 'index.html', {
+        return render(request, 'registration/login.html', {
             'error_message': "Неправильный логин или пароль"
         })
 

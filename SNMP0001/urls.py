@@ -12,6 +12,7 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+
 """
 from django.conf.urls import url, include
 from django.contrib import admin
@@ -28,6 +29,5 @@ urlpatterns = [
     #url(r'^optic-network/', include('optic_network.urls')),
     url(r'^telebot/', include('helper_bot.urls')),
     #url(r'^sktv/', include('sktv.urls')),
-
-    #url(r'^connector/', include('connector.urls')),
+    url(r'^api/', include('api.urls')),
 ]
