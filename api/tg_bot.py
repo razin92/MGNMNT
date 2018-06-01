@@ -165,11 +165,12 @@ class Message(View):
 
     def post(self, request):
         users = AuthorizedUser.objects.filter(authorized=True, user_id__isnull=False)
-        body = request.body
+        body = request.body.decode('utf-8')
+        result = json.loads(body)
         text = 'Ip_add: %s \n' \
                'Post: %s \n' % \
                (request.META['REMOTE_ADDR'],
-                body)
+                result)
 
         for each in users:
             bot.sendMessage(each.user_id, text)
