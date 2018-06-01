@@ -165,7 +165,7 @@ class Message(View):
 
     def post(self, request):
         users = AuthorizedUser.objects.filter(authorized=True, user_id__isnull=False)
-        body = request.body.decode('utf-8')
+        body = request.body.decode('utf-8', 'ignore')
         result = json.loads(body)
         text = 'Ip_add: %s \n' \
                'Post: %s \n' % \
