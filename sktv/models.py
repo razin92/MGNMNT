@@ -61,7 +61,7 @@ class Device(models.Model):
 
     def __str__(self):
         return "%s (%s)" % (
-            self.device_type,
+            self.model,
             self.location
         )
 
