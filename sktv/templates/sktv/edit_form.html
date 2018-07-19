@@ -1,0 +1,9 @@
+{% extends 'sktv/base.html' %}
+{% load bootstrap %}
+{% block body %}
+    <form method="post">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <input type="submit" value="сохранить">
+    </form>
+{% endblock %}
