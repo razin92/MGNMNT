@@ -41,7 +41,7 @@
     </div>
     <div class="panel panel-default" style="width: 20%; margin-left: 5%; float: left">
     <div class="panel-body">	
-    <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }}</strong></p>
+    <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }} + {{ ports|length }}</strong></p>
     {% for element in result_now %}
         <p>{{ element.name }}: <strong>{{ element.counter }}</strong></p>
     {% endfor %}
@@ -56,10 +56,9 @@
         <p>Провайдер: <strong>{{ last_subscriber.provider }}</strong></p>
     </div>
     </div>
-    <div>
-    <div class="panel panel-default" style="margin-top: 20%">
-    <h5 align="center">Информация о невведенных абонентах ({{ ports|length }})</h5>
+    <div class="panel panel-default" style="clear: both">
     <div class="panel-body">
+    <h5 align="center">Информация о невведенных абонентах ({{ ports|length }})</h5>
     <table class="table table-hover table-striped">
     <thead>
     <tr>
