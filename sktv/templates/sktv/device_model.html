@@ -13,16 +13,18 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Наименование</th>
+                        <th>Модель</th>
+                        <th>Тип</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for each in devices %}
                     <tr>
                         <td>
-                        <a href="{% url 'sktv:device_type_edit' each.id %}">{{ each.id }}</a>
+                        <a href="{% url 'sktv:device_model_edit' each.id %}">{{ each.id }}</a>
                         </td>
-                        <td>{{ each }}</td>
+                        <td>{{ each.model }}</td>
+                        <td>{{ each.device_type }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

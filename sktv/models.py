@@ -28,7 +28,7 @@ class BuildingBase(models.Model):
         default=5, verbose_name="Кол-во этажей")
 
     def __str__(self):
-        return "%s(%s эт., %s п-ов)" % (
+        return "%s(%s п-ов, %s эт.)" % (
             self.name, self.entrance_qty, self.floor_qty
         )
 

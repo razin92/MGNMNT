@@ -1,28 +1,28 @@
 {% extends 'sktv/base.html' %}
 {% load bootstrap %}
+{% load table_drower %}
 {% block body %}
-
     <div class="panel panel-default" style="width: 40%; margin: auto">
         <div class="panel-body">
         <form method="post">
-            {{ form|bootstrap_horizontal }}
+            {{ form|bootstrap }}
             {% csrf_token %}
             <input type="submit" value="Создать">
         </form>
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Наименование</th>
+                        {% for each in headers %}
+                        <th>{{ each.name }}</th>
+                        {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                {% for each in devices %}
+                {% for each in data %}
                     <tr>
-                        <td>
-                        <a href="{% url 'sktv:device_type_edit' each.id %}">{{ each.id }}</a>
-                        </td>
-                        <td>{{ each }}</td>
+                        {% for element in headers %}
+                            <td>{{ each|table:element.name }}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
                 </tbody>

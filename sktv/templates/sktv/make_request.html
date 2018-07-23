@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block body %}
+    <style>
+        input {
+            margin: 5px 50px 0 50px;
+            width: 600px;
+        }
+    </style>
+<div class="panel panel-default" style="width: 40%; margin: auto">
+<div class="panel-body">
+    <form action="{% url 'sktv:request' %}" method="POST" class="form-horizontal">
+     <div class="form-group">
+        {% csrf_token %}
+        {% for element in form %}
+            <div class="col-lg-11">
+                {{ element }}
+            </div>
+        {% endfor %}
+        <input type="submit">
+     </div>
+    </form>
+</div>
+</div>
+{% endblock %}
