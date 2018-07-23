@@ -86,7 +86,7 @@ class Index(View):
 
     def unfilled_ports(self):
         result = PortsInfo.objects.filter(
-            number__lt=25, subscriber__isnull=True, select=True).order_by('switch__address__quarter')
+            number__lt=25, subscriber__isnull=True, select=True).order_by('switch__address')
         return result
 
 
