@@ -56,6 +56,40 @@
         <p>Провайдер: <strong>{{ last_subscriber.provider }}</strong></p>
     </div>
     </div>
+    <div>
+    <div class="panel panel-default" style="margin-top: 20%">
+    <h5 align="center">Информация о невведенных абонентах</h5>
+    <div class="panel-body">
+    <table class="table table-hover table-striped">
+    <thead>
+    <tr>
+        <th>Свич</th>
+	    <th>Порт</th>
+        <th>Узел</th>
+        <th>Описание</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for each in ports %}
+            <tr>
+                <td>
+                    <a href="{% url 'info:switch_detail' each.switch.id %}" target="_blank">
+                        {{ each.switch.ip_add }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'info:ports_detail' each.id %}" target="_blank">
+                        {{ each.number }}
+                    </a>
+                </td>
+                <td>{{ each.switch.address }}</td>
+                <td>{{ each.description }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    </div>
+    </div>
 {% endblock %}
 {% else %}
 {% block auth %}

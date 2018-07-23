@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from . import views
 
 urlpatterns = [
     #url('^', include('django.contrib.auth.urls')),
-    url(r'^$', views.index, name='index'),
+    url(r'^$', login_required(views.Index.as_view()), name='index'),
     url(r'^login/$', views.Login.as_view(), name='login'),
     url(r'^login-redirect/$', views.Login.as_view(), name="login-redirect"),
     url(r'^logout/$', views.logout_view, name='logout'),
@@ -29,6 +30,6 @@ urlpatterns = [
     url(r'^connector/', include('connector.urls')),
     #url(r'^optic-network/', include('optic_network.urls')),
     url(r'^telebot/', include('helper_bot.urls')),
-    #url(r'^sktv/', include('sktv.urls')),
+    url(r'^sktv/', include('sktv.urls')),
     url(r'^api/', include('api.urls')),
 ]
