@@ -72,7 +72,7 @@ class Index(View):
             date__year=timezone.now().year).count())
                       for provider in provider_set]
         last_subscriber = Subscriber.objects.filter(
-            port__isnull=False, document__isnull=False).order_by('document').last()
+            port__isnull=False, document__regex=r'[0-9]+').order_by('document').last()
 
         return render_to_response("index.html", {
             'switch': switch,
