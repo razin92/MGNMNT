@@ -5,13 +5,16 @@ from .models import \
     Subscriber, Quarter, HomeNumber, ApartmentNumber, \
     Providerinfo, SwitchModel, Address, PortsInfo
 
+
 class FilterForm(forms.Form):
     subscriber = forms.CharField(help_text='Ф.И.О', max_length=15)
+
 
 class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = ['contract_number', 'contract_person']
+
 
 class SwitchFilterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -27,6 +30,7 @@ class SwitchFilterForm(forms.ModelForm):
         model = Switch
         fields = ['address']
 
+
 class SwitchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SwitchForm, self).__init__(*args, **kwargs)
@@ -40,6 +44,7 @@ class SwitchForm(forms.ModelForm):
         model = Switch
         fields = ['model', 'ip_add', 'address', 'description']
 
+
 class AddressSearchForm(forms.ModelForm):
 
     def __init__(self, data):
@@ -49,6 +54,7 @@ class AddressSearchForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = ['district', 'quarter', 'home', 'apartment']
+
 
 class SubscriberForm(forms.ModelForm):
 

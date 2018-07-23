@@ -5,7 +5,7 @@
     <div class="panel-body">
         <h4>Укажите адрес абонента</h4>
         {{ subscriber }}
-        <form action="" method="post">
+        <form action="{% url 'info:subscriber_create' %}" method="post">
             {% csrf_token %}
             {{ form|bootstrap }}
             <input type="submit" value="Далее" class="btn btn-success btn-sm"/>

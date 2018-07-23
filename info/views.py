@@ -2,11 +2,11 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, re
 from connector.views import SSH_connection
 from django.urls import reverse, reverse_lazy
 from django.views import generic, View
-from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber, Address
+from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber, Address, District
 from .  import scripts, decorators
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
-from .forms import FilterForm, ContractForm, AddressSearchForm, SwitchForm, SwitchFilterForm
+from .forms import FilterForm, ContractForm, AddressSearchForm, SwitchForm, SwitchFilterForm, SubscriberForm
 import json
 
 
@@ -221,31 +221,59 @@ def search_subscribers_result(request):
 
     return render(request, template, context)
 
-class ContractView(View):
+class SubscriberCreateView(View):
+    template = 'info/contract_form_create.html'
+
+    def get(self, request, address):
+        form = SubscriberForm(address)
+        context = {
+            'form': form,
+        }
+        return render(request, self.template, context)
+
+    def post(self, request):
+        form = SubscriberForm(Address.objects.get(pk=request.POST['address']), request.POST or None)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('info:subscribers_list'))
+        context = {
+            'form': form,
+        }
+        return render(request, self.template, context)
+
+class SearchByAddressView(View):
     template = 'info/contract_form.html'
 
     def get(self, request):
         form = AddressSearchForm(None)
         context = {
-            'subscriber': ' ',
             'form': form,
         }
 
         return render(request, self.template, context)
 
     def post(self, request):
-        form = AddressSearchForm(request.POST or None)
-        subscriber = ''
-        if form.is_valid():
-            subscriber = Subscriber.objects.filter(
-                address__quarter__number=request.POST['quarter'],
-                address__home__number=request.POST['building'],
-                address__apartment__number=request.POST['apartment']
+        rqst = request.POST
+        form = AddressSearchForm(rqst or None)
+        subscriber = Subscriber.objects.filter(
+                address__quarter__id=request.POST['quarter'],
+                address__home__id=request.POST['home'],
+                address__apartment__id=request.POST['apartment'],
+                port__isnull=False,
             )
+        address = Address.objects.get_or_create(
+                district=District.objects.get(pk=rqst['district']),
+                quarter=Quarter.objects.get(pk=rqst['quarter']),
+                home=HomeNumber.objects.get(pk=rqst['home']),
+                apartment=ApartmentNumber.objects.get(pk=rqst['apartment']),
+            )
+        if subscriber.__len__() == 0:
+            address = address[0]
+            return SubscriberCreateView.get(SubscriberCreateView, request, address)
 
         context = {
             'form': form,
-            'subscriber': subscriber,
+            'subscriber': 'Такой абонент уже есть'
         }
 
         return render(request, self.template, context)

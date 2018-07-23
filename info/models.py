@@ -19,7 +19,7 @@ class SwitchModel(models.Model):
         return self.model
 
 class District(models.Model):
-    name = models.CharField(max_length=15, unique=True)
+    name = models.CharField(max_length=15, unique=True, verbose_name='Район')
 
     class Meta():
         ordering = ['name']
@@ -28,7 +28,7 @@ class District(models.Model):
         return self.name
 
 class Quarter(models.Model):
-    number = models.PositiveIntegerField(unique=True)
+    number = models.PositiveIntegerField(unique=True, verbose_name='Квартал')
 
     class Meta():
         ordering = ['number']
@@ -37,7 +37,7 @@ class Quarter(models.Model):
         return str(self.number)
 
 class HomeNumber(models.Model):
-    number = models.CharField(unique=True, max_length=5)
+    number = models.CharField(unique=True, max_length=5, verbose_name='Дом')
 
     class Meta():
         ordering = ['number']
@@ -46,7 +46,7 @@ class HomeNumber(models.Model):
         return str(self.number)
 
 class ApartmentNumber(models.Model):
-    number = models.PositiveIntegerField(unique=True)
+    number = models.PositiveIntegerField(unique=True, verbose_name='Квартира')
 
     class Meta():
         ordering = ['number']
@@ -55,18 +55,18 @@ class ApartmentNumber(models.Model):
        return str(self.number)
 
 class Address(models.Model):
-    district = models.ForeignKey(District)
-    quarter = models.ForeignKey(Quarter)
-    home = models.ForeignKey(HomeNumber)
-    apartment = models.ForeignKey(ApartmentNumber, blank=True, null=True)
+    district = models.ForeignKey(District, verbose_name='Район')
+    quarter = models.ForeignKey(Quarter, verbose_name='Квартал')
+    home = models.ForeignKey(HomeNumber, verbose_name='Дом')
+    apartment = models.ForeignKey(ApartmentNumber, blank=True, null=True, verbose_name='Квартира')
     description = models.CharField(max_length=20, blank=True)
 
     class Meta:
-        unique_together = ('district', 'quarter', 'home', 'apartment')
+        unique_together = (('district', 'quarter', 'home', 'apartment'),)
         ordering = ['district', 'quarter', 'home', 'apartment']
 
     def __str__(self):
-        if self.apartment == None:
+        if self.apartment is None:
             result = "%s-%s дом:%s" % (self.district.name, self.quarter.number, self.home)
         else:
             result = "%s-%s дом:%s кв:%s" % (self.district.name, self.quarter.number, self.home, self.apartment.number)
@@ -150,16 +150,21 @@ class PortsInfo(models.Model):
         return reverse('info:ports_edit', kwargs={'pk': self.pk})
 
 class Subscriber(models.Model):
-    name = models.CharField(max_length=50)
-    document = models.CharField(max_length=20, unique=True, null=True)
-    provider = models.ForeignKey(Providerinfo)
-    address = models.ForeignKey(Address,on_delete=models.SET_NULL, null=True)
-    port = models.OneToOneField(PortsInfo, null=True, on_delete=models.DO_NOTHING, related_name='subscriber', blank=True)
-    login = models.CharField(max_length=20, null=True)
-    date = models.DateField(default=timezone.now)
-    telephone = models.CharField(max_length=13, null=True)
-    bill_url = models.URLField(null=True, blank=True, default="#")
-    comment = models.CharField(max_length=50, blank=True)
+    name = models.CharField(max_length=50, verbose_name='Ф.И.О')
+    document = models.CharField(max_length=20, unique=True, null=True, verbose_name='Договор №')
+    provider = models.ForeignKey(Providerinfo, verbose_name='Провайдер')
+    address = models.ForeignKey(Address,on_delete=models.SET_NULL, null=True, verbose_name='Адрес')
+    port = models.OneToOneField(
+        PortsInfo, null=True,
+        on_delete=models.DO_NOTHING,
+        related_name='subscriber',
+        blank=True,
+        verbose_name='Свич:порт')
+    login = models.CharField(max_length=20, null=True, verbose_name='Логин')
+    date = models.DateField(default=timezone.now, verbose_name='Дата подключения')
+    telephone = models.CharField(max_length=13, null=True, verbose_name='Телефон')
+    bill_url = models.URLField(null=True, blank=True, default="#", verbose_name='URL в биллинге')
+    comment = models.CharField(max_length=50, blank=True, verbose_name='Заметки')
 
     class Meta:
         unique_together = ('name', 'address')
