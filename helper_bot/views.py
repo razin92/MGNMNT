@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
+from django.views import View
 from .models import Language, SystemMessage, TGUser, Menu, MenuItem, MenuGroup, FAQ, TvSettings, TvModel, New
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 from telepot.loop import MessageLoop
 from .decorator import check_msg
 from .emodji import converter
 from django.utils import timezone
-from .token import TOKEN
+from .token import TOKEN, TOKEN_Oner
 from django.contrib.auth.decorators import login_required
 import telepot
 import time
@@ -205,7 +206,7 @@ class MenuSet():
             title = each.name
             date = each.date_pub
             news_text = each.text
-            text = '%s - %s \n%s' % (date, title, news_text)
+            text = '%s \n%s' % (title, news_text)
             if picture is None:
                 bot.sendMessage(chat_id, text)
             else:
@@ -280,9 +281,37 @@ def fast_start(request):
     for element in MenuItem.menu_item_list:
         MenuItem.objects.get_or_create(menu_item=element[0])
     for menu_item in MenuItem.objects.all():
-        Menu.objects.get_or_create(language=lng, ico=':def:', menu_item=menu_item, name=menu_item.menu_item)
+        Menu.objects.get_or_create(
+            language=lng,
+            ico=':def:',
+            menu_item=menu_item,
+            name=menu_item.menu_item)
     for element in MenuItem.objects.all():
         for each in SystemMessage.type_list:
-            SystemMessage.objects.get_or_create(menu_item=element, type_of_message=each[0], text='%s%s' % (element.menu_item, each[0]), language=lng)
+            SystemMessage.objects.get_or_create(
+                menu_item=element,
+                type_of_message=each[0],
+                text='%s%s' % (element.menu_item, each[0]), language=lng)
 
     return render(request, 'index.html')
+
+
+class OnerSender(View):
+    bot_oner = telepot.Bot(TOKEN_Oner)
+    chat_id = '-292753947'
+
+    def post(self, request):
+        callback = request.POST['callback']
+        name = request.POST['name']
+        phone = request.POST['phone']
+        text = '✉️ *Заявка на:* %s \n' \
+               '👤 *Имя:* %s \n' \
+               '📞 *Телефон:* %s \n' % (
+            callback, name, phone
+        )
+        self.send_message(text)
+        return HttpResponseRedirect('http://oner.uz/thank-you.html')
+
+    def send_message(self, text):
+        #self.bot_oner.sendMessage(self.chat_id, text, parse_mode='Markdown')
+        print(text)
