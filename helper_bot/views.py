@@ -313,5 +313,4 @@ class OnerSender(View):
         return HttpResponseRedirect('http://oner.uz/thank-you.html')
 
     def send_message(self, text):
-        #self.bot_oner.sendMessage(self.chat_id, text, parse_mode='Markdown')
-        print(text)
+        self.bot_oner.sendMessage(self.chat_id, text, parse_mode='Markdown')
