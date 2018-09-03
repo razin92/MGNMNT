@@ -4,11 +4,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from . import scripts
 
+
 class Vendor(models.Model):
     name = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class SwitchModel(models.Model):
     vendor = models.ForeignKey(Vendor, null=True)
@@ -17,6 +19,7 @@ class SwitchModel(models.Model):
 
     def __str__(self):
         return self.model
+
 
 class District(models.Model):
     name = models.CharField(max_length=15, unique=True, verbose_name='Район')
@@ -27,6 +30,7 @@ class District(models.Model):
     def __str__(self):
         return self.name
 
+
 class Quarter(models.Model):
     number = models.PositiveIntegerField(unique=True, verbose_name='Квартал')
 
@@ -35,6 +39,7 @@ class Quarter(models.Model):
 
     def __str__(self):
         return str(self.number)
+
 
 class HomeNumber(models.Model):
     number = models.CharField(unique=True, max_length=5, verbose_name='Дом')
@@ -45,6 +50,7 @@ class HomeNumber(models.Model):
     def __str__(self):
         return str(self.number)
 
+
 class ApartmentNumber(models.Model):
     number = models.PositiveIntegerField(unique=True, verbose_name='Квартира')
 
@@ -53,6 +59,7 @@ class ApartmentNumber(models.Model):
 
     def __str__(self):
        return str(self.number)
+
 
 class Address(models.Model):
     district = models.ForeignKey(District, verbose_name='Район')
@@ -72,11 +79,13 @@ class Address(models.Model):
             result = "%s-%s дом:%s кв:%s" % (self.district.name, self.quarter.number, self.home, self.apartment.number)
         return result
 
+
 class SnmpCommunity(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class OidBase(models.Model):
     name = models.CharField(max_length=30)
@@ -85,6 +94,7 @@ class OidBase(models.Model):
 
     def __str__(self):
         return self.value
+
 
 class Switch(models.Model):
     ip_add = models.GenericIPAddressField(unique=True, verbose_name='IP адрес')
@@ -95,6 +105,7 @@ class Switch(models.Model):
     def __str__(self):
         return str(self.ip_add)
 
+
 class Network(models.Model):
     ip_add = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
@@ -103,13 +114,20 @@ class Network(models.Model):
     def __str__(self):
         return self.name
 
+
 class Vlaninfo(models.Model):
     name = models.CharField(max_length=50)
-    tag = models.PositiveIntegerField()
+    tag = models.PositiveIntegerField(unique=True)
     networks = models.ForeignKey(Network, blank=True, null=True)
 
     def __str__(self):
         return self.name
+
+
+class AdditionalSettingsToVlan(models.Model):
+    vlan = models.ForeignKey(Vlaninfo)
+    settings = models.CharField(max_length=300)
+
 
 class Providerinfo(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -119,20 +137,20 @@ class Providerinfo(models.Model):
     def __str__(self):
         return self.name
 
+
 class PortsInfo(models.Model):
     switch = models.ForeignKey(Switch, on_delete=models.CASCADE)
     number = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(28), MinValueValidator(1)])
     description = models.CharField(max_length=50, blank=True)
     select = models.BooleanField(default=False, verbose_name=(u'Используется'))
+    vlan = models.ForeignKey(Vlaninfo, null=True, blank=True)
 
     class Meta:
         unique_together = ('switch', 'number')
         ordering = ['switch', 'number']
 
     def __str__(self):
-        sw = str(self.switch)
-        num = str(self.number)
-        return sw+':'+num
+        return '%s:%s' % (self.switch, self.number)
 
     def is_up(self):
         switch = str(self.switch)
@@ -143,11 +161,11 @@ class PortsInfo(models.Model):
         status = scripts.GetPortStatus(switch, comm, oidport)
         if status == '1':
             return True
-        else:
-            return False
+        return False
 
     def get_absolute_url(self):
         return reverse('info:ports_edit', kwargs={'pk': self.pk})
+
 
 class Subscriber(models.Model):
     name = models.CharField(max_length=50, verbose_name='Ф.И.О')
@@ -178,11 +196,13 @@ class Subscriber(models.Model):
             self.name
         )
 
+
 class MediaconverterModel(models.Model):
     model = models.CharField(max_length=20, unique=True, verbose_name="Модель")
 
     def __str__(self):
         return self.model
+
 
 class Action(models.Model):
     name = models.CharField(max_length=20, verbose_name="Название Акции")
@@ -193,6 +213,7 @@ class Action(models.Model):
     def __str__(self):
         return self.name
 
+
 class WiFiRouterModel(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, verbose_name="Производитель")
     model = models.CharField(max_length=20, unique=True, verbose_name="Модель")
@@ -200,12 +221,14 @@ class WiFiRouterModel(models.Model):
     def __str__(self):
         return "%s / %s" % (self.vendor, self.model)
 
+
 class Mediaconverter(models.Model):
     model = models.ForeignKey(MediaconverterModel, on_delete=models.CASCADE, verbose_name="Модель")
     serial_number = models.CharField(max_length=20, unique=True, verbose_name="серийный номер")
 
     def __str__(self):
         return "%s(%s)" % (self.model, self.serial_number)
+
 
 class ExpendableMaterial(models.Model):
     subscriber = models.OneToOneField(Subscriber, on_delete=models.PROTECT, verbose_name="Абонент")
@@ -249,6 +272,7 @@ class ExpendableMaterial(models.Model):
 
     def __str__(self):
         return "%s" % (self.subscriber)
+
 
 class Contract(models.Model):
     subscriber = models.ForeignKey(Subscriber, on_delete=models.PROTECT, verbose_name="Абонент")

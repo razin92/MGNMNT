@@ -6,6 +6,10 @@ from .models import (
 )
 class SubscriberAdmin(admin.ModelAdmin):
     list_display = ('name', 'provider', 'address', 'port')
+    search_fields = ['name']
+
+class VlanInfoAdmin(admin.ModelAdmin):
+    pass
 
 admin.site.register(Address)
 admin.site.register(ApartmentNumber)

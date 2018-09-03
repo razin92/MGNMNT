@@ -16,6 +16,17 @@
 		{% if user.is_superuser %}
 		{% endif %}
                 <li><a href="{% url 'info:subscribers_list' %}">Абоненты</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">SKTV<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="{% url 'sktv:device_type' %}">Типы устройств</a></li>
+                      <li><a href="{% url 'sktv:device_model' %}">Модели устройст</a></li>
+                      <li><a href="{% url 'sktv:building_base' %}">Типы зданий</a></li>
+                      <li><a href="{% url 'sktv:building'%}">Здания</a></li>
+                      <li><a href="{% url 'sktv:device' %}">Расположение устройств</a></li>
+                      <li><a href="{% url 'sktv:building_group'%}">Группы зданий</a></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'logout' %}">{{ user }}:Выйти</a></li>
@@ -41,7 +52,7 @@
     </div>
     <div class="panel panel-default" style="width: 20%; margin-left: 5%; float: left">
     <div class="panel-body">	
-    <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }} + {{ ports|length }}</strong></p>
+    <p>Подключено в этом месяце: <strong>{{ subscribers_now|length }}{% if ports %} + {{ ports|length }}{% endif %}</strong></p>
     {% for element in result_now %}
         <p>{{ element.name }}: <strong>{{ element.counter }}</strong></p>
     {% endfor %}
@@ -56,6 +67,7 @@
         <p>Провайдер: <strong>{{ last_subscriber.provider }}</strong></p>
     </div>
     </div>
+    {% if ports %}
     <div class="panel panel-default" style="clear: both">
     <div class="panel-body">
     <h5 align="center">Информация о невведенных абонентах ({{ ports|length }})</h5>
@@ -89,6 +101,7 @@
     </table>
     </div>
     </div>
+    {% endif %}
 {% endblock %}
 {% else %}
 {% block auth %}
