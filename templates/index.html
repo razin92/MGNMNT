@@ -16,18 +16,20 @@
 		{% if user.is_superuser %}
 		{% endif %}
                 <li><a href="{% url 'info:subscribers_list' %}">Абоненты</a></li>
+                <!--
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">SKTV<span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="{% url 'sktv:device_type' %}">Типы устройств</a></li>
-                      <li><a href="{% url 'sktv:device_model' %}">Модели устройст</a></li>
-                      <li><a href="{% url 'sktv:building_base' %}">Типы зданий</a></li>
-                      <li><a href="{% url 'sktv:building'%}">Здания</a></li>
-                      <li><a href="{% url 'sktv:device' %}">Расположение устройств</a></li>
-                      <li><a href="{% url 'sktv:building_group'%}">Группы зданий</a></li>
+                      <li><a href="{# url 'sktv:device_type' #}">Типы устройств</a></li>
+                      <li><a href="{# url 'sktv:device_model' #}">Модели устройст</a></li>
+                      <li><a href="{# url 'sktv:building_base' #}">Типы зданий</a></li>
+                      <li><a href="{# url 'sktv:building' #}">Здания</a></li>
+                      <li><a href="{# url 'sktv:device' #}">Расположение устройств</a></li>
+                      <li><a href="{# url 'sktv:building_group' #}">Группы зданий</a></li>
                     </ul>
                 </li>
-            </ul>
+                -->
+                </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'logout' %}">{{ user }}:Выйти</a></li>
             </ul>
