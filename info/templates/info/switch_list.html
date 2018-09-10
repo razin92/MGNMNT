@@ -2,18 +2,22 @@
 {% load bootstrap %}
 {% block search %}
     <style>
+     form {
+         max-width: 500px;
+     }
      .form-control {
          width: auto;
+         float: left;
+         margin-left: 25%;
     }
     </style>
     <div class="well well-lg" style="width: 80%; margin-left: 10%; background-color: transparent;">
-    <div align="center">
-    <form action="" method="get">
-    {{ form|bootstrap }}
-    <input type="submit" value="фильтр" class="btn btn-primary btn-sm">
-    <a href="{% url 'info:switch_list' %}" class="btn btn-default btn-sm">сброс</a>
-</form>
-    </div>
+        <div align="center">
+            <form action="" method="get" id="filter">
+                {{ form|bootstrap }}
+            </form>
+        </div>
+        <a href="{% url 'info:switch_list' %}" class="btn btn-default btn-sm" style="margin: -5px 0 5px 10px">сброс</a>
     </div>
 {% endblock %}
 {% block body %}
@@ -54,6 +58,11 @@
 {% endif %}
 </div>
 </div>
+    <script>
+    $('#id_address').on('change', function filter() {
+        document.getElementById('filter').submit();
+        });
+    </script>
 {% endblock %}
 {% block paginator %}
 {% endblock %}
