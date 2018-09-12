@@ -139,7 +139,7 @@ class Keyboard():
         keyboard = ReplyKeyboardMarkup(
             keyboard=keys,
             resize_keyboard=True,
-            one_time_keyboard=True,
+            one_time_keyboard=False,
         )
         return keyboard
 
@@ -150,7 +150,7 @@ class Keyboard():
         keyboard = ReplyKeyboardMarkup(
             keyboard=keys,
             resize_keyboard=True,
-            one_time_keyboard=True,
+            one_time_keyboard=False,
         )
         return keyboard
 
