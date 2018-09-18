@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, re
 from connector.views import SSH_connection
 from django.urls import reverse, reverse_lazy
 from django.views import generic, View
+from django.db.models import Sum
 from .models import Switch, PortsInfo, OidBase, SnmpCommunity, Subscriber, Quarter, HomeNumber, ApartmentNumber, Address, District
 from .  import scripts, decorators
 from django.contrib.auth.models import User
@@ -20,11 +21,15 @@ class SwitchView(View):
         if request.GET.get('address', ''):
             req = request.GET['address']
             switches = Switch.objects.filter(address__id=req)
+        total_ports = switches.values('model__users_ports').aggregate(Sum('model__users_ports'))
+        free_ports = switches.filter(portsinfo__select=False, portsinfo__users=True).__len__()
 
         context = {
             'switch': switches,
             'address': address,
-            'form': form
+            'form': form,
+            'total_ports': total_ports,
+            'free_ports': free_ports
         }
 
         return render(request, template, context)
@@ -44,10 +49,11 @@ def PortsInfoDetail(request, pk):
     template = 'info/ports_detail.html'
     detail = ''
     error_message = ''
-    try:
-        detail = SSH_connection(port.switch.ip_add, port.number)
-    except:
-        error_message = 'Ошибка при подключении к коммутатору'
+    if port.select:
+        try:
+            detail = SSH_connection(port.switch.ip_add, port.number)
+        except:
+            error_message = 'Ошибка при подключении к коммутатору'
 
     context = {
         'portsinfo': port,
@@ -60,7 +66,7 @@ def PortsInfoDetail(request, pk):
 class PortsInfoEdit(generic.UpdateView):
     template_name = 'info/ports_edit.html'
     model = PortsInfo
-    fields = ['description', 'select']
+    fields = ['description', 'select', 'users']
 
     def get_success_url(self):
         return reverse('info:switch_detail', args=(self.object.switch.id,))
@@ -108,10 +114,13 @@ class CreateSwitch(View):
     #Function create ports according on the switch.model.ports q-tty
     def port_create(self, switch):
         for each in range(1, switch.model.ports+1):
-            PortsInfo.objects.get_or_create(
+            p = PortsInfo.objects.get_or_create(
                 switch=switch,
                 number=each,
             )
+            if each > switch.model.users_ports:
+                p.users = False
+                p.save()
 
     def get(self, request):
         form = SwitchForm(None)

@@ -27,6 +27,8 @@
     {% if user.is_superuser %}
     <a href="{% url 'info:switch_create' %}" class="btn btn-sm" style="margin: 4px;">Добавить свич</a>
     {% endif %}
+    Всего портов: <strong>{{ total_ports.model__users_ports__sum }}</strong>
+    / Свободных: <strong>{{ free_ports }}</strong>
     <table class="table table-bordered table-hover">
     <thead>
         <tr>

@@ -7,6 +7,7 @@
     <p>Комментарий_ {{ form.description }}</p>
     {% if user.is_superuser %}
         <p>Активен: {{ form.select }}</p>
+        <p>Пользовательский: {{ form.users }}</p>
     {% endif %}
     <div align="right">
     <input type="submit" value="Сохранить" class="btn btn-success btn-sm"/>

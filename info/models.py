@@ -16,6 +16,7 @@ class SwitchModel(models.Model):
     vendor = models.ForeignKey(Vendor, null=True)
     model = models.CharField(max_length=50, unique=True)
     ports = models.PositiveIntegerField()
+    users_ports = models.PositiveIntegerField(default=24, null=True, blank=True)
 
     def __str__(self):
         return self.model
@@ -144,6 +145,7 @@ class PortsInfo(models.Model):
     description = models.CharField(max_length=50, blank=True)
     select = models.BooleanField(default=False, verbose_name=(u'Используется'))
     vlan = models.ForeignKey(Vlaninfo, null=True, blank=True)
+    users = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('switch', 'number')
