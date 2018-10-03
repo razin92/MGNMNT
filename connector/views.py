@@ -1,32 +1,39 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse
+from info.models import Switch
 from . import scripts
 from .auth_data import login, password
-import paramiko
-import time
+import paramiko, datetime, time
 
 def PortDown(request):
     scripts.SetPortStatus('192.168.1.3','TESTwr','1.3.6.1.2.2.1.7.2',2)
     return HttpResponseRedirect(reverse('info:switch_list'))
 
-def SSH_connection(ip, port):
-    #template = 'connector/ssh.html'
-    #вызов клиента
+def base_connector(ip):
     client = paramiko.SSHClient()
-    #получаем ключи SSH автоматически
+    # получаем ключи SSH автоматически
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    #данные для подключения
-    client.connect(hostname=ip, username=login, password=password,
-                   look_for_keys=False, allow_agent=False)
+    # данные для подключения
+    try:
+        client.connect(hostname=ip, username=login, password=password,
+                       look_for_keys=False, allow_agent=False)
 
-    #вызов командной строки, вывод данных(для исключения лишних)
-    ssh = client.invoke_shell()
-    time.sleep(0.4)
-    ssh.recv(1000)
-    #команды и результаты вывода
+        # вызов командной строки, вывод данных(для исключения лишних)
+        ssh = client.invoke_shell()
+        time.sleep(0.4)
+        ssh.recv(1000)
+        return ssh
+    except:
+        return False
+
+def SSH_connection(ip, port):
+    # template = 'connector/ssh.html'
+    # вызов клиента
+    ssh = base_connector(ip)
+    # команды и результаты вывода
     commands = ['sh vlan port %s' % port, 'sh fdb port %s' % port, 'sh error port %s' % port]
     result = []
-    #выполнение команд
+    # выполнение команд
     for command in commands:
         ssh.send('\n%s\n' % command)
         time.sleep(0.4)
@@ -67,3 +74,19 @@ def SSH_connection(ip, port):
     }
 
     return context
+
+def backup_cfg():
+    switches = Switch.objects.all()
+    today = datetime.date.today()
+    print('###START###')
+    for each in switches:
+        ip = each.ip_add
+        print('Connecting to ', ip)
+        ssh = base_connector(ip)
+        if ssh is not False:
+            command = 'upload cfg_toTFTP 192.168.220.200 dest_file %s_%s.cfg' % (ip, today)
+            ssh.send('\n%s\n' % command)
+            print('success!')
+        else:
+            print('fail!')
+    print('###END OF THE OPERATION###')
