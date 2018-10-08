@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from .models import AuthorizedUser
 from .token import pst_notifier_bot as TOKEN
+from .token import test_messaging_bot as TEST_TOKEN
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from basicauth.decorators import basic_auth_required
@@ -177,6 +178,41 @@ class Message(View):
 
         for each in users:
             bot.sendMessage(each.user_id, text)
+
+        response = {
+            'result': 'post_ok'
+        }
+
+        return JsonResponse(response)
+
+
+@method_decorator(basic_auth_required, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
+class MessageTest(View):
+
+    def get(self, request):
+
+        response = {
+            'result': 'get_ok',
+            'yours_ip': '%s' % request.META['REMOTE_ADDR'],
+        }
+        return JsonResponse(response)
+
+    def post(self, request):
+        users = ['50786101', '119920517']
+        test_bot = telepot.Bot(TEST_TOKEN)
+        body = request.body.decode('utf-8', 'ignore')
+        try:
+            result = json.loads(body)
+        except:
+            result = body
+        text = 'Ip_add: %s \n' \
+               'Post: %s \n' % \
+               (request.META['REMOTE_ADDR'],
+                result)
+
+        for each in users:
+            test_bot.sendMessage(each, text)
 
         response = {
             'result': 'post_ok'

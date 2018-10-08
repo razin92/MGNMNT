@@ -6,5 +6,6 @@ app_name = 'api'
 
 urlpatterns = [
     url(r'^start/$', views.run_bot, name='start_notifier'),
-    url(r'^notifier/$', views.Message.as_view(), name='notifier')
+    url(r'^notifier/$', views.Message.as_view(), name='notifier'),
+    url(r'^notifier/test/$', views.MessageTest.as_view(), name='notifier_test')
 ]
