@@ -117,7 +117,7 @@ class CreateSwitch(View):
             p = PortsInfo.objects.get_or_create(
                 switch=switch,
                 number=each,
-            )
+            )[0]
             if each > switch.model.users_ports:
                 p.users = False
                 p.save()
